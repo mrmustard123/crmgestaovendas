@@ -1,0 +1,17 @@
+http://diariodecodigos.info/2010/01/mysql-error-1005-can%E2%80%99t-create-table-errno-150/
+MySql Error 1005: Can’t create table (errno: 150)
+Vira e meche entre uma modelagem e outra eu sempre me deparo com o seguinte erro “Error 1005: Can’t create table (errno: 150)” enquanto estou trabalhando com uma Foreign Key.
+
+Isso quer dizer que tem algo errado (lógico) do qual esteja impedindo a criação de sua nova Foreign Key, segue abaixo os erros mais comuns:
+
+Os dois campos relacionados da Foreign Key não tem o mesmo tipo ou tamanho. Por exemplo, se um campo é INT(10) o campo da chave precisa ser INT(10) também, se for colocado INT(11) ou TINYINY já não serve. Você deve verificar esses dados usando a query “SHOW CREATE TABLE tblname;”. Também confirme se ambos os campos são ‘signed’ ou ‘unsigned’. Conclusão, os campos devem ser EXATAMENTE o mesmo!
+O campo do qual você deseja se referenciar em outra tabela não tem um índice (index) ou não é uma chave primária (primary key). Se um dos campos que você deseja criar a relação não for uma “primary key”, você deve criar um índice para ela.
+O nome da Foreign Key já existe em alguma chave. Confira se o nome de sua Foreign Key é única no seu banco de dados. Simplesmente adicione alguns caracteres aleatórios no fim do nome de sua key para testar essa condição.
+Uma ou ambas as tabelas são MyISAM. Para utilizar Foreign Key ambas as tabelas devem usar InnoDB. Normalmente quando ambas as tabelas são MyISAM o MySQL não apresenta nenhuma mensagem de erro, simplesmente não cria a chave.
+Você pode ter especificado “CASCADE ON DELETE SET NULL”, enquanto o campo é “NOT NULL”, esse é o erro mais comum.
+Se o seu script está funcionando perfeitamente em um server, mas não em outro, verifique o collate ou charset, eles podem dar problemas caso sejam diferentes.
+Você pode ter um valor default (ex. default=0) na sua coluna Foreign Key.
+O nome de sua Foreign Key excede o limite de no máximo 64 caracteres.
+Bem.. eu acredito que a maioria dos erros sejam causados por esses motivos acima, caso você tenha passado por esse problema e a causa tenha sido diferente, colabore.
+
+Boa Sorte!

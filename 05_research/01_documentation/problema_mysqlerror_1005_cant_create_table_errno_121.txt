@@ -1,0 +1,7 @@
+
+PROBLEMA: MysqlERROR 1005: Can’t create table (errno: 121)
+
+
+SOLUÇÃO:
+
+Certa vez ocorreu esse erro quando um amigo restaurava backup do mysql e infelizmente não tinha muita coisa na web para auxiliar a resolver o erro. A mensagem de erro é bem clara LOL se você for um desenvolvedor do mysql rsrsrs…Descobri depois de muita pesquisa que esse erro ocorre porque a query de criação da tabela possui uma CONSTRAINT que tem o mesmo nome de uma outra CONSTRAINT de alguma tabela existente no banco.Para resolver isso é só alterar o nome de uma das CONSTRAINT :pBom, agora está mastigadinho para vocês :p

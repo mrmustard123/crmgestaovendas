@@ -1,0 +1,25 @@
+$ php -v
+PHP 8.2.27 (cli) (built: Dec 17 2024 14:38:40) (ZTS Visual C++ 2019 x64)
+Copyright (c) The PHP Group
+Zend Engine v4.2.27, Copyright (c) Zend Technologies
+    with Zend OPcache v8.2.27, Copyright (c), by Zend Technologies
+    with Xdebug v3.4.1, Copyright (c) 2002-2025, by Derick Rethans
+
+$cd wamp64
+$cd www
+$ composer create-project laravel/laravel:^10.0 crmgestaovendas
+$cd crmgestaovendas
+$ composer require doctrine/orm
+$ composer require laravel-doctrine/orm
+$ php artisan vendor:publish --tag="doctrine.config"
+$ composer require tymon/jwt-auth
+$ php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+$ php artisan jwt:secret
+jwt-auth secret [aCZO47AB1R3dgYce3VKjL3rUy4TLB5cUDo1DBIKt4I4lQdjuJdX7axgRt3iT8CMe] set successfully.
+
+
+
+
+
+
+

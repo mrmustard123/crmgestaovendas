@@ -1,0 +1,49 @@
+Task,Hours
+"Design entity 'person' (abstract, base for PF/PJ)",2h
+Design 'person_individual' (PF),2h
+Design 'person_company' (PJ),2h
+Design 'contact' entity,2h
+Design 'account' entity,2h
+Define relation: contact ↔ account,2h
+Implement CRUD: Accounts (companies),3h
+Implement CRUD: Contacts (individuals),3h
+Logic to link/unlink Contacts to Accounts,2h
+Contact form (create/edit),2h
+Account form (create/edit),2h
+View contacts by account,2h
+Contact detail view,2h
+"Design 'opportunity' entity: value, close date, stage, etc.",2h
+CRUD: Opportunities,3h
+Link Opportunity to Contact and/or Account,2h
+Logic: Update stage with drag-and-drop,2h
+Visual board with columns per stage,3h
+Implement drag-and-drop logic,3h
+Opportunity card with basic info,2h
+Entity 'lead': source QR/site/manual,2h
+"Entity 'activity': call, meeting, email",2h
+Entity 'document' linked to customer or opportunity,2h
+Auto-create lead via QR code,3h
+Handle lead via site (manual or API),2h
+Manual lead input,1h
+Register sales activities (linked to contact/account),2h
+Upload/download documents,3h
+Manual lead form,2h
+Activity tracking dashboard,2h
+Document upload interface,2h
+Document list by client/opportunity,2h
+Sales funnel report with stage conversion,4h
+Forecast based on opportunity data,4h
+Performance per salesperson,4h
+Activity summary per user,4h
+Lead source analysis,3h
+Funnel and forecast charts,3h
+Ranking and sortable tables,3h
+"Filters by period, status, user",2h
+Simple export to PDF/Excel,2h
+Test all user flows,3h
+Validate business rules,3h
+Fix UI bugs,3h
+Final visual adjustments and responsiveness,3h
+"Improve usability (UX details, shortcuts, messages)",3h
+Light documentation for use,3h
+Initial DB backup and delivery prep,2h
