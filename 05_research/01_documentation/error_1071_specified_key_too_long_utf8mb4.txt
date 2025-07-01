@@ -1,0 +1,19 @@
+Ir a la carpeta “config” luego abrir el archive database.php y cambiar
+
+'charset' => 'utf8mb4',
+'collation' => 'utf8mb4_unicode_ci',
+a
+'charset' => 'utf8',
+'collation' => 'utf8_unicode_ci',
+O también en \app\Providers\AppServiceProvider.php:
+
+
+
+use Illuminate\Support\Facades\Schema;
+
+
+
+….
+public function boot(){
+	  Schema::defaultStringLength(191);
+}

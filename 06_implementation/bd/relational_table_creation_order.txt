@@ -1,0 +1,14 @@
+users_group
+users
+functionality
+directive
+vendor
+company
+person
+opportunity
+document
+product_service
+prod_serv_opp
+activity
+stage
+stage_history

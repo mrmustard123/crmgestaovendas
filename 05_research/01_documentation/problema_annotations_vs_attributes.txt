@@ -1,0 +1,18 @@
+A partir de PHP 8 y Doctrine 3 ya no se usan annotations para mapear las clases a tablas tipo:
+
+class Supply{
+    
+    
+    
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */ 
+    public $supply_id;/* tinyint(4) NOT NULL AUTO_INCREMENT,*/
+
+Ahora se usan Attributes:
+
+   #[ORM\Id]
+    
+   #[ORM\Column(type: "smallint", options: ["unsigned" => true])]
+    
+   #[ORM\GeneratedValue]
+    
+   private int $id_eleccion;
