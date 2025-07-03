@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
+        'passwords' => 'doctrine_users',
     ],
 
     /*
@@ -38,8 +38,15 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'doctrine_users',
         ],
+        
+
+        'api' => [
+            'driver' => 'jwt', // Aquí usamos el driver jwt
+            'provider' => 'doctrine_users', // Nuestro proveedor de usuarios Doctrine
+        ],        
+        
     ],
 
     /*
@@ -60,10 +67,18 @@ return [
     */
 
     'providers' => [
+        /*
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        */
+
+        'doctrine_users' => [ // Nuevo proveedor para Doctrine
+            'driver' => 'doctrine',
+            'model' => \App\Models\Doctrine\User::class, // Entidad Doctrine User
+            // El 'hasher' por defecto de Laravel (bcrypt) funciona bien con Doctrine
+        ],        
 
         // 'users' => [
         //     'driver' => 'database',

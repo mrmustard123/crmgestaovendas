@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
+namespace App\Models\Doctrine; 
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTime; // Para los campos de fecha y hora
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Contracts\Auth\Authenticatable; 
 
 #[ORM\Entity]
 #[ORM\Table(name: "users")] // Mapea a la tabla 'users'
 #[ORM\HasLifecycleCallbacks] // Necesario si usas PrePersist/PreUpdate para timestamps
-class User // Clase 'User' en singular, como es la convención para entidades
+class User implements JWTSubject, Authenticatable  // Clase 'User' en singular, como es la convención para entidades
 {
     // `user_id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY
     #[ORM\Id]
@@ -42,15 +44,15 @@ class User // Clase 'User' en singular, como es la convención para entidades
     // `remember_token` varchar(100) DEFAULT NULL
     #[ORM\Column(type: "string", length: 100, nullable: true)]
     private ?string $remember_token = null;
-
-    // `created_at` timestamp NULL DEFAULT NULL
-    #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTime $created = null; // Renombrado a 'created' para evitar conflicto si Laravel usa 'created_at'
+    
+// `created_at` timestamp NULL DEFAULT NULL
+    #[ORM\Column(type: "datetime_immutable", name: "created_at", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+    private ?DateTime $created = null; // La propiedad sigue siendo 'created', pero mapea a 'created_at' en DB
 
     // `updated_at` timestamp NULL DEFAULT NULL
-    #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTime $updated = null; // Renombrado a 'updated' para evitar conflicto si Laravel usa 'updated_at'
-
+    #[ORM\Column(type: "datetime_immutable", name: "updated_at", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+    private ?DateTime $updated = null; // La propiedad sigue siendo 'updated', pero mapea a 'updated_at' en DB    
+    
 
     // --- Constructor (Opcional) ---
     public function __construct()
@@ -119,7 +121,7 @@ class User // Clase 'User' en singular, como es la convención para entidades
         $this->usersGroup = $usersGroup;
         return $this;
     }
-
+/*
     public function getRememberToken(): ?string
     {
         return $this->remember_token;
@@ -130,7 +132,7 @@ class User // Clase 'User' en singular, como es la convención para entidades
         $this->remember_token = $remember_token;
         return $this;
     }
-
+*/
     public function getCreated(): ?DateTime
     {
         return $this->created;
@@ -152,6 +154,103 @@ class User // Clase 'User' en singular, como es la convención para entidades
         $this->updated = $updated;
         return $this;
     }
+    
+    
+    // Implementación de JWTSubject
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {   // El ID único del usuario
+        return $this->user_id; 
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims(): array
+    {
+        return [
+            'username' => $this->username,
+            'email' => $this->email,
+            // Puedes añadir cualquier otro dato que quieras que esté disponible en el payload del token
+            'user_group_id' => $this->usersGroup ? $this->usersGroup->getUserGroupId() : null,
+            'group_name' => $this->usersGroup ? $this->usersGroup->getGroupName() : null,
+        ];
+    }   
+    
+    
+    // --- Métodos de Illuminate\Contracts\Auth\Authenticatable ---
+
+    /**
+     * Get the name of the unique identifier for the user.
+     *
+     * @return string
+     */
+    public function getAuthIdentifierName(): string
+    {
+        return 'user_id'; // Debe ser el nombre de tu columna de ID único
+    }
+
+    /**
+     * Get the unique identifier for the user.
+     *
+     * @return mixed
+     */
+    public function getAuthIdentifier(): mixed
+    {
+        return $this->user_id; // Debe devolver el valor de tu ID único
+    }
+
+    /**
+     * Get the password for the user.
+     *
+     * @return string
+     */
+    public function getAuthPassword(): string
+    {
+        return $this->password; // Debe devolver la contraseña hasheada
+    }
+
+    /**
+     * Get the "remember me" token value.
+     *
+     * @return string|null
+     */
+    public function getRememberToken(): ?string
+    {
+        return $this->remember_token;
+    }
+
+    /**
+     * Set the "remember me" token value.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setRememberToken($value): void
+    {
+        $this->remember_token = $value;
+    }
+
+    /**
+     * Get the column name for the "remember me" token.
+     *
+     * @return string
+     */
+    public function getRememberTokenName(): string
+    {
+        return 'remember_token';
+    }
+
+    
+    
+    
+    
 
     // Lifecycle Callbacks para updated_at y created_at
     #[ORM\PrePersist]

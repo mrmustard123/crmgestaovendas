@@ -65,4 +65,18 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
+    
+    /**
+     * The application's route middleware aliases.
+     *
+     * These middleware may be used to group routes by alias.
+     *
+     * @var array<string, class-string|string>
+     */
+    protected $routeMiddleware = [
+
+        'auth.jwt' => \App\Http\Middleware\CheckJwtWeb::class, // Agrega esta línea
+    ];    
+    
+    
 }

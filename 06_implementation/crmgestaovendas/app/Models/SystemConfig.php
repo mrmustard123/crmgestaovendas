@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class SystemConfig extends Model
 {
     use HasFactory;
+    
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'system_config';
+    protected $primaryKey = 'system_config_id';       
+        
 }

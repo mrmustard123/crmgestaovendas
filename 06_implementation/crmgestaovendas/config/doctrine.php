@@ -30,7 +30,7 @@ return [
             'meta'          => env('DOCTRINE_METADATA', 'attributes'),
             'connection'    => env('DB_CONNECTION', 'mysql'),
             'paths'         => [
-                base_path('Models/Doctrine')
+                base_path('app/Models/Doctrine')
             ],
 
             'repository'    => Doctrine\ORM\EntityRepository::class,

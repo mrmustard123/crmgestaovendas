@@ -298,4 +298,18 @@ return [
 
     ],
 
+    
+    /*
+    |--------------------------------------------------------------------------
+    | JWT Authentication Guard
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify which authentication guard to use when attempting to
+    | authenticate a user through the JWT middleware.
+    |
+    */
+    'auth_guard' => 'api', // Asegúrate de que esto apunte a tu guard 'api'    
+    
+    
+    
 ];

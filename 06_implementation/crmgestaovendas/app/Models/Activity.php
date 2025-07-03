@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     use HasFactory;
+    
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'activity'; // <-- ¡Añade esta línea!
+    protected $primaryKey = 'activity_id';    
+    
 }
