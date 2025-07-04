@@ -33,8 +33,9 @@ use App\Http\Controllers\Api\Auth\LoginController;
 
 
 // Rutas protegidas por JWT (ejemplo, para el futuro)
+/*
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', [LoginController::class, 'logout']);
     Route::post('refresh', [LoginController::class, 'refresh']);
     Route::post('me', [LoginController::class, 'me']);
-});
+});*/
