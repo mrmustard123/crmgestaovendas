@@ -12,7 +12,7 @@ Email: leonardo616@gmail.com
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('page_title', 'CRM Gestaovendas')</title>
+    <title>@yield('page_title', 'CRM 360')</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
@@ -53,11 +53,14 @@ Email: leonardo616@gmail.com
                             <li>
                                 <a href="{{ url('/admin/products-services/create') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Cadastrar Produtos/Serviços</a>
                             </li>
+                            <li>
+                                <a href="{{ url('/admin/vendors/create') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Cadastrar Vendedores</a>
+                            </li>                            
                             {{-- Aquí podrías añadir más ítems de menú para administradores --}}
                         @endif
 
                         {{-- Menú para Gerentes (ejemplo) --}}
-                        @if ($userGroupName == 'Gerente')
+                        @if ($userGroupName == 'Gerentes')
                             <li class="mt-4 pt-4 border-t border-gray-700">
                                 <span class="block py-2 px-4 text-gray-400 font-semibold">Gerência</span>
                             </li>
@@ -68,7 +71,7 @@ Email: leonardo616@gmail.com
                         @endif
 
                         {{-- Menú para Vendedores (ejemplo) --}}
-                        @if ($userGroupName == 'Vendedor')
+                        @if ($userGroupName == 'Vendedores')
                             <li class="mt-4 pt-4 border-t border-gray-700">
                                 <span class="block py-2 px-4 text-gray-400 font-semibold">Vendas</span>
                             </li>
@@ -76,6 +79,9 @@ Email: leonardo616@gmail.com
                                 <a href="#" class="block py-2 px-4 rounded hover:bg-gray-700">Meus Leads</a>
                             </li>
                             {{-- Más ítems para vendedores --}}
+                            <li>
+                                <a href="{{ url('/salesperson/leads/create') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Cadastrar Lead</a>
+                            </li>                              
                         @endif
 
                     @endauth
@@ -127,5 +133,6 @@ Email: leonardo616@gmail.com
         // Puedes añadir aquí lógica JavaScript para el menú si necesitas interactividad (ej. toggles)
         // Por ahora, solo es HTML/CSS
     </script>
+    @stack('scripts')
 </body>
 </html>

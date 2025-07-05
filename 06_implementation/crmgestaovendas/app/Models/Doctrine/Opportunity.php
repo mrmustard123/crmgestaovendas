@@ -3,7 +3,7 @@
 namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 
 use Doctrine\ORM\Mapping as ORM;
-use DateTime; // Para los campos de fecha y hora
+use DateTimeImmutable; // Para los campos de fecha y hora
 
 #[ORM\Entity]
 #[ORM\Table(name: "opportunity")] // Mapea a la tabla 'opportunity'
@@ -70,11 +70,11 @@ class Opportunity
 
     // `created_at` timestamp NULL DEFAULT NULL
     #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTime $created_at = null;
+    private ?DateTimeImmutable $created_at = null;
 
     // `updated_at` timestamp NULL DEFAULT NULL
     #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTime $updated_at = null;
+    private ?DateTimeImmutable $updated_at = null;
 
 
     // --- Constructor (Opcional) ---
@@ -216,23 +216,23 @@ class Opportunity
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(?DateTime $created_at): self
+    public function setCreatedAt(?DateTimeImmutable $created_at): self
     {
         $this->created_at = $created_at;
         return $this;
     }
 
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(?DateTime $updated_at): self
+    public function setUpdatedAt(?DateTimeImmutable $updated_at): self
     {
         $this->updated_at = $updated_at;
         return $this;
@@ -243,16 +243,16 @@ class Opportunity
     public function setCreatedAtValue(): void
     {
         if ($this->created_at === null) {
-            $this->created_at = new DateTime();
+            $this->created_at = new DateTimeImmutable();
         }
         if ($this->updated_at === null) {
-            $this->updated_at = new DateTime();
+            $this->updated_at = new DateTimeImmutable();
         }
     }
 
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
-        $this->updated_at = new DateTime();
+        $this->updated_at = new DateTimeImmutable();
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Models\Doctrine; 
 
 use Doctrine\ORM\Mapping as ORM;
-use DateTime; // Para los campos de fecha y hora
+use DateTimeImmutable; // Para los campos de fecha y hora
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\Authenticatable; 
 
@@ -47,11 +47,11 @@ class User implements JWTSubject, Authenticatable  // Clase 'User' en singular, 
     
 // `created_at` timestamp NULL DEFAULT NULL
     #[ORM\Column(type: "datetime_immutable", name: "created_at", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTime $created = null; // La propiedad sigue siendo 'created', pero mapea a 'created_at' en DB
+    private ?DateTimeImmutable $created = null; // La propiedad sigue siendo 'created', pero mapea a 'created_at' en DB
 
     // `updated_at` timestamp NULL DEFAULT NULL
     #[ORM\Column(type: "datetime_immutable", name: "updated_at", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTime $updated = null; // La propiedad sigue siendo 'updated', pero mapea a 'updated_at' en DB    
+    private ?DateTimeImmutable $updated = null; // La propiedad sigue siendo 'updated', pero mapea a 'updated_at' en DB    
     
 
     // --- Constructor (Opcional) ---
@@ -133,23 +133,23 @@ class User implements JWTSubject, Authenticatable  // Clase 'User' en singular, 
         return $this;
     }
 */
-    public function getCreated(): ?DateTime
+    public function getCreated(): ?DateTimeImmutable
     {
         return $this->created;
     }
 
-    public function setCreated(?DateTime $created): self
+    public function setCreated(?DateTimeImmutable $created): self
     {
         $this->created = $created;
         return $this;
     }
 
-    public function getUpdated(): ?DateTime
+    public function getUpdated(): ?DateTimeImmutable
     {
         return $this->updated;
     }
 
-    public function setUpdated(?DateTime $updated): self
+    public function setUpdated(?DateTimeImmutable $updated): self
     {
         $this->updated = $updated;
         return $this;
@@ -257,16 +257,16 @@ class User implements JWTSubject, Authenticatable  // Clase 'User' en singular, 
     public function setCreatedAndUpdatedValues(): void
     {
         if ($this->created === null) {
-            $this->created = new DateTime();
+            $this->created = new DateTimeImmutable();
         }
         if ($this->updated === null) {
-            $this->updated = new DateTime();
+            $this->updated = new DateTimeImmutable();
         }
     }
 
     #[ORM\PreUpdate]
     public function setUpdatedValue(): void
     {
-        $this->updated = new DateTime();
+        $this->updated = new DateTimeImmutable();
     }
 }

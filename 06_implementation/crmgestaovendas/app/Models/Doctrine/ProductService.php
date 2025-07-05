@@ -1,92 +1,79 @@
 <?php
 
-namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
+namespace App\Models\Doctrine;
 
 use Doctrine\ORM\Mapping as ORM;
-use DateTime; // Para los campos de fecha y hora
+use DateTimeImmutable; // Para los campos de fecha y hora inmutables
 
 #[ORM\Entity]
 #[ORM\Table(name: "product_service")] // Mapea a la tabla 'product_service'
-#[ORM\HasLifecycleCallbacks] // Necesario si usas PrePersist/PreUpdate para timestamps
+#[ORM\HasLifecycleCallbacks] // Necesario para los timestamps automáticos
 class ProductService
 {
-    // `product_service_id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY
     #[ORM\Id]
     #[ORM\Column(type: "integer", options: ["unsigned" => true])]
     #[ORM\GeneratedValue(strategy: "AUTO")]
     private int $product_service_id;
 
-    // `product_name` varchar(255) NOT NULL
-    #[ORM\Column(type: "string", length: 255)]
-    private string $product_name;
+    #[ORM\Column(type: "string", length: 255, name: "product_name")]
+    private string $name; // Mapeado a 'product_name' en DB
 
-    // `description` text DEFAULT NULL
     #[ORM\Column(type: "text", nullable: true)]
     private ?string $description = null;
 
-    // `type` enum('product','service') DEFAULT NULL
-    #[ORM\Column(type: "string", length: 10, nullable: true)] // Longitud suficiente para el ENUM más largo
+    // Para el ENUM 'type', Doctrine no tiene un tipo ENUM nativo.
+    // Lo mapeamos como string y manejamos la validación en la aplicación.
+    #[ORM\Column(type: "string", length: 7, nullable: true)] // 'product' o 'service'
     private ?string $type = null;
 
-    // `category` varchar(100) DEFAULT NULL
     #[ORM\Column(type: "string", length: 100, nullable: true)]
     private ?string $category = null;
 
-    // `unit_price` decimal(15,2) DEFAULT NULL
-    #[ORM\Column(type: "decimal", precision: 15, scale: 2, nullable: true)]
-    private ?float $unit_price = null;
+    #[ORM\Column(type: "decimal", precision: 15, scale: 2, name: "unit_price", nullable: true)]
+    private ?float $price = null; // Mapeado a 'unit_price' en DB
 
-    // `unit` varchar(50) DEFAULT NULL
     #[ORM\Column(type: "string", length: 50, nullable: true)]
     private ?string $unit = null;
 
-    // `tax_rate` decimal(15,2) DEFAULT NULL
-    #[ORM\Column(type: "decimal", precision: 15, scale: 2, nullable: true)]
-    private ?float $tax_rate = null;
+    #[ORM\Column(type: "decimal", precision: 15, scale: 2, name: "tax_rate", nullable: true)]
+    private ?float $taxRate = null;
 
-    // `is_active` tinyint NOT NULL DEFAULT '1'
-    #[ORM\Column(type: "boolean", options: ["default" => 1])] // tinyint(1) se mapea a boolean en Doctrine
-    private bool $is_active = true;
+    #[ORM\Column(type: "boolean", name: "is_active", options: ["default" => 1])]
+    private bool $isActive = true;
 
-    // `sku` varchar(12) DEFAULT NULL
     #[ORM\Column(type: "string", length: 12, nullable: true)]
     private ?string $sku = null;
 
-    // `is_tangible` tinyint NOT NULL DEFAULT '1'
-    #[ORM\Column(type: "boolean", options: ["default" => 1])] // tinyint(1) se mapea a boolean en Doctrine
-    private bool $is_tangible = true;
+    #[ORM\Column(type: "boolean", name: "is_tangible", options: ["default" => 1])]
+    private bool $isTangible = true;
 
-    // `created_at` timestamp NULL DEFAULT NULL
-    #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTime $created_at = null;
+    #[ORM\Column(type: "datetime_immutable", name: "created_at", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+    private ?DateTimeImmutable $created_at = null;
 
-    // `updated_at` timestamp NULL DEFAULT NULL
-    #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTime $updated_at = null;
-
+    #[ORM\Column(type: "datetime_immutable", name: "updated_at", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+    private ?DateTimeImmutable $updated_at = null;
 
     // --- Constructor (Opcional) ---
     public function __construct()
     {
-        // Puedes inicializar valores por defecto aquí si no los defines en la propiedad
-        // $this->is_active = true; // Ya definido en la propiedad
-        // $this->is_tangible = true; // Ya definido en la propiedad
+        // Puedes inicializar valores por defecto aquí si es necesario
     }
 
     // --- Getters y Setters ---
+
     public function getProductServiceId(): int
     {
         return $this->product_service_id;
     }
 
-    public function getProductName(): string
+    public function getName(): string
     {
-        return $this->product_name;
+        return $this->name;
     }
 
-    public function setProductName(string $product_name): self
+    public function setName(string $name): self
     {
-        $this->product_name = $product_name;
+        $this->name = $name;
         return $this;
     }
 
@@ -108,10 +95,6 @@ class ProductService
 
     public function setType(?string $type): self
     {
-        // Opcional: Validar que el valor esté en el ENUM
-        if ($type !== null && !in_array($type, ['product', 'service'])) {
-            throw new \InvalidArgumentException("Invalid type value.");
-        }
         $this->type = $type;
         return $this;
     }
@@ -127,14 +110,14 @@ class ProductService
         return $this;
     }
 
-    public function getUnitPrice(): ?float
+    public function getPrice(): ?float
     {
-        return $this->unit_price;
+        return $this->price;
     }
 
-    public function setUnitPrice(?float $unit_price): self
+    public function setPrice(?float $price): self
     {
-        $this->unit_price = $unit_price;
+        $this->price = $price;
         return $this;
     }
 
@@ -151,23 +134,23 @@ class ProductService
 
     public function getTaxRate(): ?float
     {
-        return $this->tax_rate;
+        return $this->taxRate;
     }
 
-    public function setTaxRate(?float $tax_rate): self
+    public function setTaxRate(?float $taxRate): self
     {
-        $this->tax_rate = $tax_rate;
+        $this->taxRate = $taxRate;
         return $this;
     }
 
     public function isActive(): bool
     {
-        return $this->is_active;
+        return $this->isActive;
     }
 
-    public function setIsActive(bool $is_active): self
+    public function setIsActive(bool $isActive): self
     {
-        $this->is_active = $is_active;
+        $this->isActive = $isActive;
         return $this;
     }
 
@@ -184,32 +167,32 @@ class ProductService
 
     public function isTangible(): bool
     {
-        return $this->is_tangible;
+        return $this->isTangible;
     }
 
-    public function setIsTangible(bool $is_tangible): self
+    public function setIsTangible(bool $isTangible): self
     {
-        $this->is_tangible = $is_tangible;
+        $this->isTangible = $isTangible;
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(?DateTime $created_at): self
+    public function setCreatedAt(?DateTimeImmutable $created_at): self
     {
         $this->created_at = $created_at;
         return $this;
     }
 
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(?DateTime $updated_at): self
+    public function setUpdatedAt(?DateTimeImmutable $updated_at): self
     {
         $this->updated_at = $updated_at;
         return $this;
@@ -217,19 +200,19 @@ class ProductService
 
     // Lifecycle Callbacks para updated_at y created_at
     #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
+    public function setCreatedAndUpdatedValues(): void
     {
         if ($this->created_at === null) {
-            $this->created_at = new DateTime();
+            $this->created_at = new DateTimeImmutable();
         }
         if ($this->updated_at === null) {
-            $this->updated_at = new DateTime();
+            $this->updated_at = new DateTimeImmutable();
         }
     }
 
     #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
+    public function setUpdatedValue(): void
     {
-        $this->updated_at = new DateTime();
+        $this->updated_at = new DateTimeImmutable();
     }
 }

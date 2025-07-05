@@ -3,7 +3,7 @@
 namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 
 use Doctrine\ORM\Mapping as ORM;
-use DateTime; // Para los campos de fecha y hora
+use DateTimeImmutable; // Para los campos de fecha y hora
 
 #[ORM\Entity]
 #[ORM\Table(name: "system_config")] // Mapea a la tabla 'system_config'
@@ -39,7 +39,7 @@ class SystemConfig
     // `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     // Solo updated_at, no created_at en tu DDL
     #[ORM\Column(type: "datetime_immutable", options: ["default" => "CURRENT_TIMESTAMP"])]
-    private DateTime $updated_at;
+    private DateTimeImmutable $updated_at;
 
 
     // --- Constructor (Opcional) ---
@@ -114,12 +114,12 @@ class SystemConfig
         return $this;
     }
 
-    public function getUpdatedAt(): DateTime
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(DateTime $updated_at): self
+    public function setUpdatedAt(DateTimeImmutable $updated_at): self
     {
         $this->updated_at = $updated_at;
         return $this;
@@ -130,6 +130,6 @@ class SystemConfig
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
-        $this->updated_at = new DateTime();
+        $this->updated_at = new DateTimeImmutable();
     }
 }
