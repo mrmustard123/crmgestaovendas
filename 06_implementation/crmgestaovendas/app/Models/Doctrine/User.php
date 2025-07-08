@@ -4,6 +4,7 @@ namespace App\Models\Doctrine;
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
+use DateTime;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\Authenticatable; 
 
@@ -33,7 +34,7 @@ class User implements JWTSubject, Authenticatable  // Clase 'User' en singular, 
 
     // `email_verified_at` timestamp NULL DEFAULT NULL
     #[ORM\Column(type: "datetime_immutable", nullable: true)]
-    private ?DateTime $email_verified_at = null;
+    private ?\DateTime $email_verified_at = null;
 
     // `fk_users_group` tinyint unsigned DEFAULT NULL
     // Relación ManyToOne con UsersGroup
@@ -100,12 +101,12 @@ class User implements JWTSubject, Authenticatable  // Clase 'User' en singular, 
         return $this;
     }
 
-    public function getEmailVerifiedAt(): ?DateTime
+    public function getEmailVerifiedAt(): ?\DateTime
     {
         return $this->email_verified_at;
     }
 
-    public function setEmailVerifiedAt(?DateTime $email_verified_at): self
+    public function setEmailVerifiedAt(?\DateTime $email_verified_at): self
     {
         $this->email_verified_at = $email_verified_at;
         return $this;

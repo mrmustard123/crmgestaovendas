@@ -4,9 +4,11 @@ namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
+use DateTime;
 
 #[ORM\Entity]
 #[ORM\Table(name: "activity")] // Mapea a la tabla 'activity'
+#[ORM\HasLifecycleCallbacks]
 class Activity
 {
     // `activity_id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY
@@ -25,7 +27,7 @@ class Activity
 
     // `activity_date` date NOT NULL
     #[ORM\Column(type: "date")]
-    private DateTime $activity_date;
+    private \DateTime $activity_date;
 
     // `duration_min` tinyint DEFAULT NULL
     #[ORM\Column(type: "smallint", nullable: true)] // tinyint se mapea a smallint en Doctrine
@@ -59,6 +61,13 @@ class Activity
     private ?DateTimeImmutable $updated_at = null;
 
 
+    // --- Constructor (Opcional) ---
+    public function __construct()
+    {
+        // Puedes inicializar valores por defecto aquí si no los defines en la propiedad
+    }    
+    
+    
     // --- Getters y Setters (Métodos para acceder y modificar las propiedades) ---
     // Doctrine requiere getters y setters para acceder a las propiedades mapeadas.
 
@@ -89,12 +98,12 @@ class Activity
         return $this;
     }
 
-    public function getActivityDate(): DateTime
+    public function getActivityDate(): \DateTime
     {
         return $this->activity_date;
     }
 
-    public function setActivityDate(DateTime $activity_date): self
+    public function setActivityDate(\DateTime $activity_date): self
     {
         $this->activity_date = $activity_date;
         return $this;
@@ -189,15 +198,19 @@ class Activity
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
-        $this->updated_at = new DateTime();
+        $this->updated_at = new DateTimeImmutable();
     }
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->created_at = new DateTimeImmutable();
+        if ($this->created_at === null) {
+            $this->created_at = new DateTimeImmutable();
+        }
         if ($this->updated_at === null) {
-            $this->updated_at = new DateTimeImmutable();
+            $this->updated_at = new DateTimeImmutable(); 
         }
     }
+    
+    
 }

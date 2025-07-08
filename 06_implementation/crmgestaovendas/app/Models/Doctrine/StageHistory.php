@@ -4,6 +4,7 @@ namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
+use DateTime;
 
 #[ORM\Entity]
 #[ORM\Table(name: "stage_history")] // Mapea a la tabla 'stage_history'
@@ -27,7 +28,7 @@ class StageHistory
 
     // `stage_hist_date` date NOT NULL
     #[ORM\Column(type: "date")]
-    private DateTime $stage_hist_date;
+    private \DateTime $stage_hist_date;
 
     // `comments` varchar(255) DEFAULT NULL
     #[ORM\Column(type: "string", length: 255, nullable: true)]
@@ -65,12 +66,12 @@ class StageHistory
         return $this;
     }
 
-    public function getStageHistDate(): DateTime
+    public function getStageHistDate(): \DateTime
     {
         return $this->stage_hist_date;
     }
 
-    public function setStageHistDate(DateTime $stage_hist_date): self
+    public function setStageHistDate(\DateTime $stage_hist_date): self
     {
         $this->stage_hist_date = $stage_hist_date;
         return $this;
@@ -120,12 +121,12 @@ class StageHistory
         return $this;
     }
 
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(?DateTime $updated_at): self
+    public function setUpdatedAt(?DateTimeImmutable $updated_at): self
     {
         $this->updated_at = $updated_at;
         return $this;

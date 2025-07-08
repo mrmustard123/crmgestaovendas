@@ -4,6 +4,7 @@ namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
+use DateTime;
 
 #[ORM\Entity]
 #[ORM\Table(name: "person")] // Mapea a la tabla 'person'
@@ -66,7 +67,7 @@ class Person
 
     // `birthdate` date DEFAULT NULL
     #[ORM\Column(type: "date", nullable: true)]
-    private ?DateTime $birthdate = null;
+    private ?\DateTime $birthdate = null;
 
     // `sex` enum('MALE','FEMALE','OTHER') DEFAULT NULL
     #[ORM\Column(type: "string", length: 10, nullable: true)] // Longitud suficiente para el ENUM más largo
@@ -250,12 +251,12 @@ class Person
         return $this;
     }
 
-    public function getBirthdate(): ?DateTime
+    public function getBirthdate(): ?\DateTime
     {
         return $this->birthdate;
     }
 
-    public function setBirthdate(?DateTime $birthdate): self
+    public function setBirthdate(?\DateTime $birthdate): self
     {
         $this->birthdate = $birthdate;
         return $this;

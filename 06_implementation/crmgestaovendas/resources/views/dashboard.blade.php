@@ -7,7 +7,7 @@ Created on: 1 jul. de 2025 20:48:05
 Email: leonardo616@gmail.com
 */
 
-    //ATENCIÓN! DESACTIVAR APP_DEBUG EN .ENV AL SUBIR A PRODUCCION!
+    /*/ATENCIÓN! DESACTIVAR APP_DEBUG EN .ENV AL SUBIR A PRODUCCION!
     if (config('app.debug')) {
         xdebug_break();
 
@@ -30,7 +30,7 @@ Email: leonardo616@gmail.com
                $debugGroupName = 'Grupo no encontrado (relación nula)';
            }
         
-    }
+    }*/
 ?>
 
 @extends('layouts.app')
@@ -46,9 +46,9 @@ Email: leonardo616@gmail.com
 
         <?php
         
-                if (config('app.debug')) {
+                /*if (config('app.debug')) {
                     xdebug_break();                
-                }
+                }*/
             // Inicializamos la variable que contendrá el nombre del grupo.
             // Esto es útil para darle un valor por defecto si no se encuentra.
             $groupName = 'Grupo não encontrado';

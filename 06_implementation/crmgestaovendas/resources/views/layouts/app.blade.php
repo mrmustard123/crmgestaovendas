@@ -21,7 +21,7 @@ Email: leonardo616@gmail.com
     <div class="flex h-screen">
         <aside class="w-64 bg-gray-800 text-white flex flex-col">
             <div class="p-4 text-xl font-bold border-b border-gray-700">
-                CRM Gestaovendas
+                CRM 360
             </div>
             <nav class="flex-1 p-4">
                 <ul class="space-y-2">

@@ -4,6 +4,8 @@ namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
+use DateTime;
+
 
 #[ORM\Entity]
 #[ORM\Table(name: "opportunity")] // Mapea a la tabla 'opportunity'
@@ -30,7 +32,7 @@ class Opportunity
 
     // `expected_closing_date` date DEFAULT NULL
     #[ORM\Column(type: "date", nullable: true)]
-    private ?DateTime $expected_closing_date = null;
+    private ?\DateTime $expected_closing_date = null;
 
     // `currency` varchar(3) DEFAULT NULL
     #[ORM\Column(type: "string", length: 3, nullable: true)]
@@ -124,12 +126,12 @@ class Opportunity
         return $this;
     }
 
-    public function getExpectedClosingDate(): ?DateTime
+    public function getExpectedClosingDate(): ?\DateTime
     {
         return $this->expected_closing_date;
     }
 
-    public function setExpectedClosingDate(?DateTime $expected_closing_date): self
+    public function setExpectedClosingDate(?\DateTime $expected_closing_date): self
     {
         $this->expected_closing_date = $expected_closing_date;
         return $this;
@@ -146,12 +148,12 @@ class Opportunity
         return $this;
     }
 
-    public function getOpenDate(): ?DateTime
+    public function getOpenDate(): ?\DateTime
     {
         return $this->open_date;
     }
 
-    public function setOpenDate(?DateTime $open_date): self
+    public function setOpenDate(?\DateTime $open_date): self
     {
         $this->open_date = $open_date;
         return $this;

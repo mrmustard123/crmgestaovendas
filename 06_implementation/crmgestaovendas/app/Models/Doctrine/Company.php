@@ -4,6 +4,7 @@ namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
+use DateTime;
 
 #[ORM\Entity]
 #[ORM\Table(name: "company")] // Mapea a la tabla 'company'

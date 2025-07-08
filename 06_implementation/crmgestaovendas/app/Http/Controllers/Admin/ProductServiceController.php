@@ -109,4 +109,44 @@ class ProductServiceController extends Controller
             return redirect()->back()->with('error', 'Ocorreu um erro ao registrar o produto/serviço. Por favor, tente novamente.')->withInput();
         }
     }
+    
+    /**
+     * Busca productos/servicios por nombre.
+     * La búsqueda se activa a partir de 3 caracteres y se refina.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
+    {   // El término de búsqueda vendrá en el parámetro 'term'
+        $term = $request->query('term'); 
+
+        // Validar que el término no esté vacío y tenga al menos 3 caracteres
+        if (empty($term) || strlen($term) < 3) {
+            // Retorna un array vacío si no se cumple el criterio
+            return response()->json([]);
+        }
+
+        // Buscar productos/servicios usando Doctrine's QueryBuilder
+        $productServices = $this->entityManager->getRepository(ProductService::class)
+            ->createQueryBuilder('ps')
+            ->where('ps.name LIKE :term') // 'name' es la propiedad de la entidad ProductService
+            ->setParameter('term', '%' . $term . '%') // Busca coincidencias parciales
+            ->setMaxResults(100) // Limita el número de resultados para no saturar
+            ->getQuery()
+            ->getResult();
+
+        // Formatear los resultados para el frontend (ej. para un Select2 o una lista simple)
+        $results = [];
+        foreach ($productServices as $productService) {
+            $results[] = [
+                'id' => $productService->getProductServiceId(), // ID del producto/servicio
+                'text' => $productService->getName() // Nombre del producto/servicio
+            ];
+        }
+
+        return response()->json($results);
+    }    
+    
+    
 }
