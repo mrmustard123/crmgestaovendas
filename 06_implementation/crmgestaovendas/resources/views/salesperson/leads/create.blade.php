@@ -163,7 +163,7 @@ Email: leonardo616@gmail.com
                 {{-- Checkbox para indicar si es representante de compañía --}}
                 <div class="mb-6">
                     <label class="inline-flex items-center">                        
-                        <input type="checkbox" id="is_company_representative_display" class="form-checkbox h-5 w-5 text-blue-600" value="1" {{ old('is_company_representative') ? 'checked' : '' }}>                        
+                        <input type="checkbox" id="is_company_representative_display" class="form-checkbox h-5 w-5 text-blue-600" {{ old('is_company_representative') ? 'checked' : '' }}>                        
                         <input type="hidden" name="is_company_representative" id="is_company_representative_hidden" value="{{ old('is_company_representative') ? '1' : '0' }}">                        
                         <span class="ml-2 text-gray-700">O Lead representa uma Companhia (Pessoa Jurídica)?</span>
                     </label>
@@ -171,14 +171,13 @@ Email: leonardo616@gmail.com
 
                 {{-- Seção: Dados da Companhia (aparece condicionalmente) --}}
                 <div id="company_fields" class="border p-4 rounded-lg bg-gray-50 {{ old('is_company_representative') ? '' : 'hidden' }}">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Dados da Companhia (Pessoa Jurídica)</h3>
-                    <input type="hidden" id="company_id" name="company_id" value="">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Dados da Companhia (Pessoa Jurídica)</h3>                   
                     <div class="mb-4 relative">
                         <label for="social_reason" class="block text-gray-700 text-sm font-bold mb-2">Razão Social:</label>
                         <input type="text" id="social_reason" name="social_reason" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('social_reason') border-red-500 @enderror" value="{{ old('social_reason') }}" autocomplete="off">
                         
                         {{-- Campo oculto para el ID de la Compañía (si existe) --}}
-                        <input type="hidden" id="company_id" name="company_id" value="">
+                        <input type="hidden" id="company_id" name="company_id" value="">                        
 
                         {{-- Contenedor para las sugerencias de autocompletado de compañía --}}
                         <div id="company-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded shadow-lg mt-1 hidden">
@@ -386,18 +385,26 @@ Email: leonardo616@gmail.com
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const companyRepresentativeCheckbox = document.getElementById('is_company_representative');
+        const companyRepresentativeCheckbox = document.getElementById('is_company_representative_display');
+        const companyRepresentativeHiddenInput = document.getElementById('is_company_representative_hidden');
         const companyFieldsDiv = document.getElementById('company_fields');
+        
+       /* companyRepresentativeCheckbok.addEventListener('click',function(){
+            companyRepresentativeHiddenInput.value = companyRepresentativeCheckbox.value;
+        });*/
 
         function toggleCompanyFields() {
+            
             if (companyRepresentativeCheckbox.checked) {
                 companyFieldsDiv.classList.remove('hidden');
+                companyRepresentativeHiddenInput.value=1;
                 // Si la casilla está marcada, hacer que los campos obligatorios de compañía sean realmente obligatorios en el frontend
                 document.getElementById('social_reason').setAttribute('required', 'required');
                 document.getElementById('company_country').setAttribute('required', 'required');
             } else {
                 companyFieldsDiv.classList.add('hidden');
                 // Si la casilla no está marcada, eliminar el atributo 'required' y limpiar los valores
+                companyRepresentativeHiddenInput.value=0;
                 document.getElementById('social_reason').removeAttribute('required');
                 document.getElementById('company_country').removeAttribute('required');
 
@@ -413,10 +420,11 @@ Email: leonardo616@gmail.com
                     }
                 });
             }
+            //console.log(companyRepresentativeHiddenInput.value); para chequear el company_representative
         }
 
         // Ejecutar al cargar la página para reflejar el estado de `old()`
-        toggleCompanyFields();
+        //toggleCompanyFields();
 
         // Añadir el listener para el cambio del checkbox
         companyRepresentativeCheckbox.addEventListener('change', toggleCompanyFields);
@@ -655,7 +663,8 @@ Email: leonardo616@gmail.com
 
         // Campos de la compañía a rellenar
         const companyFields = {
-            'is_company_representative': document.getElementById('is_company_representative'), // Checkbox
+            'is_company_representative_hidden': document.getElementById('is_company_representative_hidden'), // input hidden
+            'is_company_representative_display': document.getElementById('is_company_representative_display'), // input hidden
             'company_fields': document.getElementById('company_fields'), // Div contenedor
             'social_reason': document.getElementById('social_reason'),
             'fantasy_name': document.getElementById('fantasy_name'),
@@ -702,7 +711,8 @@ Email: leonardo616@gmail.com
 
             // Rellenar campos de la compañía si existen datos
             if (personData.company) {
-                companyFields.is_company_representative.checked = true;
+                companyFields.is_company_representative_display.checked = true;
+                companyFields.is_company_representative_hidden.value = 1;
                 companyFields.company_fields.classList.remove('hidden'); // Asegurarse de que el div esté visible
                 
                 // Set the company_id if it exists
@@ -712,7 +722,7 @@ Email: leonardo616@gmail.com
                 }
 
                 for (const field in companyFields) {
-                    if (field === 'is_company_representative' || field === 'company_fields') continue; // Saltar estos campos
+                    if (field === 'is_company_representative_hidden' || field === 'company_fields' || field === 'is_company_representative_display') continue; // Saltar estos campos
                     if (companyFields[field] && personData.company[field] !== undefined && personData.company[field] !== null) {
                         if (companyFields[field].tagName === 'SELECT') {
                             const option = Array.from(companyFields[field].options).find(opt => opt.value == personData.company[field]);
@@ -727,21 +737,25 @@ Email: leonardo616@gmail.com
                     }
                 }
                 // Deshabilitar el checkbox para que no se pueda desmarcar fácilmente
-                companyFields.is_company_representative.disabled = true;
+                companyFields.is_company_representative_display.disabled = true;
             } else {
                 // Si no hay compañía, asegurarse de que el checkbox esté desmarcado y los campos ocultos/vacíos
-                companyFields.is_company_representative.checked = false;
+                companyFields.is_company_representative_display.checked = false;
+                companyFields.is_company_representative_hidden.value = 0;
                 companyFields.company_fields.classList.add('hidden');
-                companyFields.is_company_representative.disabled = false; // Habilitar si no hay compañía cargada
+                companyFields.is_company_representative_display.disabled = false; // Habilitar si no hay compañía cargada
                  // Limpiar campos de compañía
+                 
+                 /*TESTAR ESTA SECCION DE CODIGO*/
                 for (const field in companyFields) {
-                    if (field === 'is_company_representative' || field === 'company_fields') continue;
+                    if (field === 'is_company_representative_display' || field === 'is_company_representative_hidden' || field === 'company_fields') continue;
                     if (companyFields[field]) {
                         companyFields[field].value = '';
                         companyFields[field].readOnly = false;
                         companyFields[field].style.backgroundColor = '';
                     }
                 }
+                /***********************************/
                 const companyIdInput = document.getElementById('company_id');
                 if (companyIdInput) companyIdInput.value = '';
             }
@@ -767,15 +781,16 @@ Email: leonardo616@gmail.com
             }
 
             // Limpiar y deshabilitar campos de la compañía
-            companyFields.is_company_representative.checked = false;
-            companyFields.is_company_representative.disabled = false;
+            companyFields.is_company_representative_display.checked = false;
+            companyFields.is_company_representative_hidden.value = 0;            
+            companyFields.is_company_representative_display.disabled = false;
             companyFields.company_fields.classList.add('hidden'); // Ocultar campos de compañía
             
             const companyIdInput = document.getElementById('company_id');
             if (companyIdInput) companyIdInput.value = '';
 
             for (const field in companyFields) {
-                if (field === 'is_company_representative' || field === 'company_fields') continue;
+                if (field === 'is_company_representative_display' || field === 'is_company_representative_hidden' || field === 'company_fields') continue;
                 if (companyFields[field]) {
                     companyFields[field].value = '';
                     companyFields[field].readOnly = false;
@@ -857,7 +872,7 @@ Email: leonardo616@gmail.com
         const companySuggestionsDiv = document.getElementById('company-suggestions');
         const clearCompanySelectionBtn = document.getElementById('clear-company-selection');
         
-        companyRepresentativeCheckbox.checked = true;
+        //companyRepresentativeCheckbox.checked = true;
                    
 
         let companyDebounceTimeout;
@@ -870,12 +885,13 @@ Email: leonardo616@gmail.com
             clearCompanySelectionBtn.classList.remove('hidden'); // Mostrar botón para limpiar
 
             // Asegurarse de que el checkbox "Representa una compañía?" esté marcado y deshabilitado
-            companyFields.is_company_representative.checked = true;
-            //companyFields.is_company_representative.disabled = true; <-- ahora apunta al hidden
+            companyFields.is_company_representative_display.checked = true;
+            companyFields.is_company_representative_hidden.value = 1;
+            companyFields.is_company_representative_display.disabled = true;
             // Asegurarse de que el contenedor de campos de compañía esté visible
             companyFields.company_fields.classList.remove('hidden');
 
-
+            /*COLOREANDO LOS CAMPOS*/
             for (const field in companyData) { // Iterar sobre los datos recibidos
                 // Mapear los campos del backend a los IDs del frontend
                 let frontendFieldId = field;
@@ -910,7 +926,7 @@ Email: leonardo616@gmail.com
                     targetElement.readOnly = true;
                     targetElement.style.backgroundColor = '#f0f0f0';
                 }
-            }
+            }/*END FOR "COLOREANDO LOS CAMPOS*/
             companySuggestionsDiv.classList.add('hidden');
         }
 
@@ -919,15 +935,14 @@ Email: leonardo616@gmail.com
             companyIdInput.value = '';
             socialReasonInput.readOnly = false;
             socialReasonInput.value = '';
-            clearCompanySelectionBtn.classList.add('hidden');
-
-            companyFields.is_company_representative.disabled = false; // Habilitar el checkbox
+            clearCompanySelectionBtn.classList.add('hidden');            
+            companyFields.is_company_representative_display.disabled = false; // Habilitar el checkbox
             // No ocultar el contenedor directamente, el toggleCompanyFields se encargará si el checkbox se desmarca.
             // companyFields.company_fields_container.classList.add('hidden'); // No hacer esto aquí
 
             for (const field in companyFields) {
                 const targetElement = companyFields[field]; // Usar la referencia directa
-                if (targetElement && field !== 'is_company_representative' && field !== 'company_fields') {
+                if (targetElement && field !== 'is_company_representative_display' && field !== 'company_fields') {
                     if (targetElement.tagName === 'SELECT') {
                         targetElement.selectedIndex = 0; // Resetear select
                     } else {

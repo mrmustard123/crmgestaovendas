@@ -78,10 +78,12 @@ Email: leonardo616@gmail.com
                             <li>
                                 <a href="#" class="block py-2 px-4 rounded hover:bg-gray-700">Meus Leads</a>
                             </li>
-                            {{-- Más ítems para vendedores --}}
                             <li>
                                 <a href="{{ url('/salesperson/leads/create') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Cadastrar Lead</a>
-                            </li>                              
+                            </li> 
+                            <li>
+                                <a href="{{ url('/salesperson/myopportunities') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Minhas oportunidades</a>
+                            </li>                             
                         @endif
 
                     @endauth

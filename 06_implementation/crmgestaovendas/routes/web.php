@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ProductServiceController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Salesperson\LeadController;
+use App\Http\Controllers\Salesperson\OpportunityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +23,13 @@ use App\Http\Controllers\Salesperson\LeadController;
 // Rutas de autenticación (manteniendo tus nombres existentes)
 Route::post('/login-session', [LoginController::class, 'login'])->name('login.post.session');
 
+ 
 // Ruta para el formulario de login (manteniendo tu nombre existente)
 Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
@@ -65,5 +71,7 @@ Route::middleware(['auth'])->group(function () { // <-- Este 'auth' protege todo
     Route::prefix('salesperson')->name('salesperson.')->middleware('salesperson-access')->group(function () { // <-- Aquí se aplica solo el middleware de ROL
         Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
         Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
+        Route::get('/myopportunities', [OpportunityController::class, 'myopportunities'])
+             ->name('myopportunities');
     });
 });
