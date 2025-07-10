@@ -76,106 +76,67 @@ class OpportunityController extends Controller
 
         // 4. Consultar las oportunidades del vendedor que NO estén cerradas/perdidas
         
+      
+
         
-/*        
-        $opportunityRepository = $this->entityManager->getRepository(Opportunity::class);             
-        $queryBuilder = $opportunityRepository->createQueryBuilder('o')
-            ->leftJoin('o.vendor', 'v') // Une con la entidad Vendor
-            ->leftJoin('o.opportunityStatus', 'os') // Une con la entidad OpportunityStatus
-            ->leftJoin('o.person', 'p') // Une con la entidad Person (para mostrar nombre de la persona)
-            ->leftJoin('p.company', 'c') // Une con la entidad Company (si la persona está asociada a una)
-            ->leftJoin('o.leadOrigin', 'lo') // Une con la entidad LeadOrigin
-            // Hacemos join con StageHistory si tenés una relación bidireccional en StageHistory
-            ->leftJoin(StageHistory::class, 's', 'WITH', 's.opportunity = o')
-            //->leftJoin('s.stage', 'st') // si necesitás el stage al que pertenece
-            ->addSelect('v', 'os', 'p', 'c', 'lo', 's', 'st') // Selecciona también las entidades relacionadas para evitar N+1 queries
-            ->where('v.vendor_id = :vendorId'); // Filtra por el ID del vendedor     
-      */  
+    // Obtener todas las oportunidades del vendedor con su etapa actual
         
+    $queryBuilder = $this->entityManager->createQueryBuilder();
+    $queryBuilder->select(
+            'o.opportunity_id AS opportunityId',
+            'o.opportunity_name AS opportunityName',
+            'IDENTITY(o.opportunityStage) AS stageId' // Usamos directamente la relación con Stage
+        )
+        ->from(Opportunity::class, 'o')
+        ->where('o.vendor = :vendorId')
+        ->setParameter('vendorId', $vendor->getVendorId());
+
+        $opportunities = $queryBuilder->getQuery()->getScalarResult();        
   
-$queryBuilder = $this->entityManager->createQueryBuilder();        
-$queryBuilder->select('o.opportunity_id AS opportunityId', 'o.opportunity_name AS opportunityName', 'IDENTITY(s.stage) AS stageId')
-    ->from(Opportunity::class, 'o')
-    ->leftJoin(StageHistory::class, 's', 'WITH', 's.opportunity = o')
-    ->where('o.vendor = :vendorId')
-    ->setParameter('vendorId', $vendor->getVendorId());
-
-$opportunities = $queryBuilder->getQuery()->getScalarResult();
-
-
-
-
-/*
-$queryBuilder->select('o', 'v', 'os', 'p', 'c', 'lo', 's', 'st')        
-    ->from(Opportunity::class, 'o')
-    ->leftJoin('o.vendor', 'v')
-    ->leftJoin('o.opportunityStatus', 'os')
-    ->leftJoin('o.person', 'p')
-    ->leftJoin('p.company', 'c')
-    ->leftJoin('o.leadOrigin', 'lo')    
-    //Esta línea reemplaza el SQL que mencionaste
-    ->leftJoin(StageHistory::class, 's', 'WITH', 's.opportunity = o')
-    ->leftJoin('s.stage', 'st') // si querés acceder al nombre de la etapa, etc.
-    ->where('v.vendor_id = :vendorId');
-     */   
-       
         
-        // Solo aplica el filtro de exclusión si hay IDs de estados finales válidos
-        if (!empty($excludedStatusIds) && !in_array(0, $excludedStatusIds)) { // Excluye el [0] si lo usamos como placeholder
-            $queryBuilder->andWhere($queryBuilder->expr()->notIn('os.opportunity_status_id', ':excludedStatusIds'))
-                         ->setParameter('excludedStatusIds', $excludedStatusIds);
-        }
-/*
-        $opportunities = ($queryBuilder
-            ->setParameter('vendorId', $vendor->getVendorId())
-            ->orderBy('o.opportunity_name', 'ASC')
-            ->getQuery()
-            ->getResult());
-*/
         // 5. Pasar las oportunidades a la vista
         return view('salesperson.myopportunities', compact('opportunities'));
     }
     
-    public function updateStage(Request $request, Opportunity $opportunity)
-    {
-        $newStageId = $request->input('stage_id');
+public function updateStage(Request $request, $id)
+{
+    $newStageId = $request->input('stage_id');
 
-        if (!$newStageId) {
-            return response()->json(['message' => 'ID de etapa no proporcionado.'], 400);
-        }
+    // Validación básica
+    if (!$newStageId) {
+        return response()->json(['message' => 'ID da estagio não fornecido.'], 400);
+    }
 
-        // Recuperar la etapa (Stage)
-        $newStage = $this->entityManager->getRepository(Stage::class)->find($newStageId);
+    // Obtener la oportunidad
+    $opportunity = $this->entityManager->getRepository(Opportunity::class)->find($id);
+    if (!$opportunity) {
+        return response()->json(['message' => 'Oportunidade não encontrada.'], 404);
+    }
 
-        if (!$newStage) {
-            return response()->json(['message' => 'Etapa no encontrada.'], 404);
-        }
+    // Obtener la nueva etapa
+    $newStage = $this->entityManager->getRepository(Stage::class)->find($newStageId);
+    if (!$newStage) {
+        return response()->json(['message' => 'Estagio não encontrado.'], 404);
+    }
 
-        // Encontrar o crear la entrada en StageHistory para esta oportunidad
-        // Como StageHistory no guarda histórico sino la etapa actual, buscamos la entrada existente
-        $stageHistory = $this->entityManager->getRepository(StageHistory::class)->findOneBy(['opportunity' => $opportunity->getOpportunityId()]);
+    // Actualizar directamente el stage en la oportunidad
+    $opportunity->setOpportunityStage($newStage);
 
-        if (!$stageHistory) {
-            // Si no existe, crear una nueva entrada (esto podría pasar si una oportunidad se crea sin etapa inicial)
-            $stageHistory = new StageHistory();
-            $stageHistory->setOpportunity($opportunity);
-            // También necesitarás establecer stage_hist_date, quizás con la fecha actual
-            $stageHistory->setStageHistDate(new \DateTime()); // Usar DateTime para date type
-        }
-
-        // Actualizar la etapa
-        $stageHistory->setStage($newStage);
-        // Opcional: Actualizar el updated_at si no confías en el Lifecycle Callback
-        // $stageHistory->setUpdatedAt(new \DateTimeImmutable()); // Si usas DateTimeImmutable
-
-        try {
-            $this->entityManager->persist($stageHistory);
-            $this->entityManager->flush();
-            return response()->json(['message' => 'Etapa de oportunidad actualizada con éxito!', 'opportunity_id' => $opportunity->getOpportunityId(), 'new_stage_id' => $newStageId]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al guardar la etapa: ' . $e->getMessage()], 500);
-        }
-    }    
+    try {
+        $this->entityManager->persist($opportunity);
+        $this->entityManager->flush();
+        
+        return response()->json([
+            'message' => 'Estagio atualizado com sucesso!',
+            'opportunity_id' => $id,
+            'new_stage_id' => $newStageId
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Erro ao atualizar estágio: ' . $e->getMessage()
+        ], 500);
+    }
+} 
     
     
 }

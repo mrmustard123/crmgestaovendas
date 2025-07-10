@@ -101,9 +101,7 @@ Purpose: Display a list of current vendor's opportunities.
                     {{ session('error') }}
                 </div>
             @endif
-        
-        
-        
+                        
         
         <div class="kanban-board">
             {{-- Definir las etapas (stages) estáticamente, según tu seeder --}}
@@ -124,33 +122,14 @@ Purpose: Display a list of current vendor's opportunities.
                     <div class="kanban-cards">
                         @forelse ($opportunities as $opportunity)                        
                         
-                        
-                        <?php
-                       /*    if (config('app.debug')) {
-                            xdebug_break(); 
-                           }
-                          
-                               
-                         $stageHistory = $opportunities[0]->getStageHistory();                              
-                            
-                        echo $stageHistory->getStageHistory();
-                        echo $stageHistory->getStage();
-                        echo $stageHistory->getStageId();    
-                            
-                        
-                       echo ''; */
-                        ?>
-                        
-                        
 
                             <div class="kanban-card" draggable="true" data-opportunity-id="{{ $opportunity['opportunityId'] }}">
                                 <div class="opportunity-name">{{ $opportunity['opportunityName'] }}</div>
 
                             </div>                       
-                                                
-                        
+                                                                        
                         @empty
-                            <p class="text-sm text-gray-500 text-center">Nenhuma oportunidade nesta etapa.</p>
+                            <p class="text-sm text-gray-500 text-center">Nenhuma oportunidade neste estgio.</p>
                         @endforelse                                                
                     </div>
                 </div>
@@ -226,7 +205,7 @@ Purpose: Display a list of current vendor's opportunities.
             function updateOpportunityStage(opportunityId, newStageId) {
                 // Aquí deberías realizar una llamada AJAX a tu backend
                 // para actualizar el fk_stage en la tabla stage_history.
-                console.log(`Actualizando Oportunidad ${opportunityId} a Etapa ${newStageId}`);
+                console.log(`Atualizando Oportunidade ${opportunityId} a Estagio ${newStageId}`);
 
                 // Ejemplo con fetch API (requiere un endpoint en Laravel)
                 fetch(`{{ url('/') }}/opportunities/${opportunityId}/update-stage`, {
@@ -240,7 +219,7 @@ Purpose: Display a list of current vendor's opportunities.
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(errorData => {
-                            throw new Error(errorData.message || 'Error al actualizar la etapa.');
+                            throw new Error(errorData.message || 'Erro ao atualizar o estagio.');
                         });
                     }
                     return response.json();
@@ -251,7 +230,7 @@ Purpose: Display a list of current vendor's opportunities.
                 })
                 .catch(error => {
                     console.error('Error al actualizar la etapa:', error);
-                    alert('Hubo un error al mover la oportunidad: ' + error.message);
+                    alert('Ocorreu um erro ao mover a oportunidade: ' + error.message);
                     // Opcional: revertir el movimiento visual si hay un error
                     // location.reload(); // Recargar la página para reflejar el estado correcto
                 });

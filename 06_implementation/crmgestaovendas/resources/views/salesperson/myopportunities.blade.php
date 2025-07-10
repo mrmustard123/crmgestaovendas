@@ -4,91 +4,173 @@
 
 @push('styles')
     <style>
-        .kanban-board {
-            display: flex;
-            gap: 1.5rem; /* Espacio entre columnas */
+        /* Contenedor principal */
+        .table-container {
             overflow-x: auto;
-            padding-bottom: 1rem;
-            align-items: flex-start;
-        }
-        .kanban-column {
-            flex-shrink: 0;
-            width: 320px; /* Ancho fijo para las columnas */
-            background-color: #f0f2f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-        }
-        .kanban-column-header {
-            font-weight: bold;
-            font-size: 1.25rem;
-            margin-bottom: 1.25rem;
-            color: #333;
-            text-align: center;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #ccc;
-        }
-        .kanban-cards {
-            flex-grow: 1; /* Para que ocupe el espacio restante */
-            min-height: 100px; /* Permite arrastrar elementos */
-            padding-top: 0.5rem;
-        }
-        .kanban-card {
+            -webkit-overflow-scrolling: touch;
             background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 1px; /* Para que el borde redondeado sea visible */
+        }
+        
+        /* Estilos de la tabla */
+        .kanban-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
+            min-width: 1000px; /* Ancho mínimo para evitar compresión */
+        }
+        
+        /* Encabezados */
+        .kanban-table th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #1a252f;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        /* Celdas */
+        .kanban-table td {
+            padding: 12px;
+            vertical-align: middle;
+            border: 1px solid #e0e0e0;
+            background-color: white;
+            transition: background-color 0.2s;
+        }
+        
+        /* Efecto hover para filas */
+        .kanban-table tbody tr:hover td {
+            background-color: #f8f9fa;
+        }
+        
+        /* Columnas específicas */
+        .name-column {
+            width: 300px;
+            font-weight: 500;
+            color: #34495e;
+            border-left: 2px solid #e0e0e0;
+        }
+        
+        .stage-column {
+            width: 200px;
+            text-align: center;
+            background-color: #f8fafc;
+        }
+        
+        .action-column {
+            width: 180px;
+            text-align: center;
+            background-color: #f1f8fe;
+            border-right: 2px solid #e0e0e0;
+        }
+        
+        /* Bordes especiales para primera y última columna */
+        .kanban-table td:first-child {
+            border-left: 2px solid #e0e0e0;
+        }
+        
+        .kanban-table td:last-child {
+            border-right: 2px solid #e0e0e0;
+        }
+        
+        /* Tarjeta arrastrable */
+        .kanban-card {
+            background-color: white;
             border: 1px solid #ddd;
             border-radius: 6px;
-            padding: 0.75rem;
-            margin-bottom: 0.75rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 12px;
             cursor: grab;
-            display: flex; /* Para el icono y el nombre */
+            display: inline-flex;
             align-items: center;
-            justify-content: space-between; /* Icono a la derecha */
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            width: 50px;
+            height: 50px;
         }
+        
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+        }
+        
         .kanban-card:active {
             cursor: grabbing;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+        
         .kanban-card.dragging {
-            opacity: 0.5;
-            border: 2px dashed #007bff;
+            opacity: 0.7;
+            border: 2px dashed #3498db;
+            background-color: #ebf5fb;
         }
+        
         .card-emoji {
-            font-size: 1.5rem; /* Tamaño del emoji */
-            margin-right: 0.5rem;
+            font-size: 1.8rem;
         }
-        /* Estilos para las columnas adicionales */
-        .action-column {
-            width: 150px; /* Ancho más pequeño para columnas de acción */
-            background-color: #e9ecef;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Centrar contenido verticalmente */
-        }
-        .action-column-header {
-            font-weight: bold;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            color: #555;
-        }
+        
+        /* Botones de acción */
         .action-button {
-            background-color: #007bff;
+            background-color: #3498db;
             color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 6px;
             text-decoration: none;
-            margin-top: 10px;
-            transition: background-color 0.3s ease;
-            display: block;
+            display: inline-block;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            width: 140px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        
         .action-button:hover {
-            background-color: #0056b3;
+            background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* Efecto al arrastrar sobre columnas */
+        .stage-column.drag-over {
+            background-color: #ebf5fb;
+            box-shadow: inset 0 0 0 2px #3498db;
+        }
+        
+        /* Pie de tabla visual */
+        .kanban-table tbody tr:last-child td {
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .kanban-table th, 
+            .kanban-table td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .kanban-card {
+                width: 40px;
+                height: 40px;
+                padding: 8px;
+            }
+            
+            .card-emoji {
+                font-size: 1.5rem;
+            }
+            
+            .action-button {
+                width: 120px;
+                padding: 6px 10px;
+            }
         }
     </style>
 @endpush
@@ -97,161 +179,154 @@
     <div class="container mx-auto px-4 py-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Minhas Oportunidades</h2>
         
-            {{-- Definir las etapas (stages) estáticamente, según tu seeder --}}
-            @php
-                $stages = [
-                    1 => ['id'=>1, 'name' => 'Apresentação', 'color' => '#007bff'],
-                    2 => ['id'=>2, 'name' => 'Proposta', 'color' => '#007bff'],
-                    3 => ['id'=>3, 'name' => 'Negociação', 'color' => '#007bff'],
-                    4 => ['id'=>4, 'name' => 'Ganho/Perdido', 'color' => '#007bff'],
-                ];
-            @endphp        
+        @php
+            $stages = [
+                1 => ['id' => 1, 'name' => 'Apresentação', 'color' => '#007bff'],
+                2 => ['id' => 2, 'name' => 'Proposta', 'color' => '#007bff'],
+                3 => ['id' => 3, 'name' => 'Negociação', 'color' => '#007bff'],
+                4 => ['id' => 4, 'name' => 'Perdido', 'color' => '#007bff'],
+                5 => ['id' => 4, 'name' => 'Ganho', 'color' => '#007bff'],
+            ];
+        @endphp
 
-        <div class="kanban-board">
-            {{-- Columna "Nome de la Opportunity" (No interactiva, solo lista) --}}
-            <div class="kanban-column">
-                <div class="kanban-column-header">Nome da Oportunidade</div>
-                <div class="kanban-cards">
+        <div class="table-container">
+            <table class="kanban-table">
+                <thead>
+                    <tr>
+                        <th class="name-column">Nome da Oportunidade</th>
+                        @foreach ($stages as $stage)
+                            <th class="stage-column">{{ $stage['name'] }}</th>
+                        @endforeach
+                        <th class="action-column">Nova Atividade</th>
+                        <th class="action-column">Documentos</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @foreach ($opportunities as $opportunity)
-                        <div class="kanban-card border-none shadow-none bg-transparent cursor-default">
-                            <span class="font-semibold text-gray-700">{{ $opportunity['opportunityName'] }}</span>
-                        </div>
+                        <tr data-opportunity-id="{{ $opportunity['opportunityId'] }}">
+                            <td class="name-column">
+                                {{ $opportunity['opportunityName'] }}
+                            </td>
+                            
+                            @foreach ($stages as $stage)
+                                <td class="stage-column" data-stage-id="{{ $stage['id'] }}">
+                                    @if ($opportunity['stageId'] == $stage['id'])
+                                        <div class="kanban-card" 
+                                             draggable="true"
+                                             data-opportunity-id="{{ $opportunity['opportunityId'] }}">
+                                            <span class="card-emoji">&#x1F4B0;</span>
+                                        </div>
+                                    @endif
+                                </td>
+                            @endforeach
+                            
+                            <td class="action-column">
+                                <a href="#" class="action-button">
+                                    &#x270F;&#xFE0F; Nova Atividade
+                                </a>
+                            </td>
+                            <td class="action-column">
+                                <a href="#" class="action-button" 
+                                   onclick="alert('Funcionalidade de Documentos será implementada.'); return false;">
+                                    &#x1F4C4; Documentos
+                                </a>
+                            </td>
+                        </tr>
                     @endforeach
-                </div>
-            </div>
-
-            {{-- Columnas de Etapas (Arrastrables) --}}
-            @foreach ($stages as $stage)
-                <div class="kanban-column" data-stage-id="{{ $stage['id'] }}">
-                    <div class="kanban-column-header">{{ $stage['name'] }}</div>
-                    <div class="kanban-cards">
-                        @forelse ($opportunities as $opportunity)
-                            @if (  isset($opportunity['stageId']) && ($opportunity['stageId'] == $stage['id'])  )
-                                <div class="kanban-card" draggable="true" data-opportunity-id="{{ $opportunity['opportunityId'] }}">                                    
-                                    {{-- Aquí puedes usar un emoji o un ícono --}}
-                                    <span class="card-emoji">&#x1F4B0;</span> {{-- Emoji de billetes --}}
-                                </div>
-                            @endif
-                        @empty
-                            {{-- No hay oportunidades en esta etapa --}}
-                        @endforelse
-                    </div>
-                </div>
-            @endforeach
-
-            {{-- Columna "Nova Atividade" --}}
-            <div class="action-column">
-                <div class="action-column-header">Nova Atividade</div>
-                <a href="" class="action-button">
-                    &#x270F;&#xFE0F; Nova Atividade
-                </a>
-            </div>
-
-            {{-- Columna "Documentos" --}}
-            <div class="action-column">
-                <div class="action-column-header">Documentos</div>
-                <a href="#" class="action-button" onclick="alert('Funcionalidade de Documentos será implementada.'); return false;">
-                    &#x1F4C4; Documentos
-                </a>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
 @endsection
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const draggables = document.querySelectorAll('.kanban-card[draggable="true"]');
-            const columns = document.querySelectorAll('.kanban-column[data-stage-id]'); // Solo columnas de etapas
-
-            draggables.forEach(card => {
-                card.addEventListener('dragstart', () => {
-                    card.classList.add('dragging');
-                });
-
-                card.addEventListener('dragend', () => {
-                    card.classList.remove('dragging');
-                });
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const draggables = document.querySelectorAll('.kanban-card[draggable="true"]');
+        const stageColumns = document.querySelectorAll('td.stage-column[data-stage-id]');
+        
+        draggables.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                card.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', card.dataset.opportunityId);
+                e.dataTransfer.effectAllowed = 'move';
+                
+                // Efecto visual durante el arrastre
+                setTimeout(() => {
+                    card.style.visibility = 'hidden';
+                }, 0);
             });
-
-            columns.forEach(column => {
-                column.addEventListener('dragover', e => {
-                    e.preventDefault(); // Permite el drop
-                    const afterElement = getDragAfterElement(column, e.clientY);
-                    const draggable = document.querySelector('.dragging');
-                    if (draggable) {
-                        if (afterElement == null) {
-                            column.querySelector('.kanban-cards').appendChild(draggable);
-                        } else {
-                            column.querySelector('.kanban-cards').insertBefore(draggable, afterElement);
-                        }
-                    }
+            
+            card.addEventListener('dragend', () => {
+                document.querySelectorAll('.stage-column').forEach(col => {
+                    col.classList.remove('drag-over');
                 });
-
-                column.addEventListener('drop', e => {
-                    e.preventDefault();
-                    const draggable = document.querySelector('.dragging');
-                    if (draggable) {
-                        const opportunityId = draggable.dataset.opportunityId;
-                        const newStageId = column.dataset.stageId;
-
-                        // Solo procede si la etapa cambió (opcional, para evitar llamadas innecesarias)
-                        const currentStageId = draggable.closest('.kanban-column').dataset.stageId;
-                        if (currentStageId !== newStageId) {
-                            updateOpportunityStage(opportunityId, newStageId);
-                        }
-                    }
-                });
+                card.classList.remove('dragging');
+                card.style.visibility = 'visible';
             });
-
-            function getDragAfterElement(column, y) {
-                const draggableCards = [...column.querySelectorAll('.kanban-card:not(.dragging)')];
-
-                return draggableCards.reduce((closest, child) => {
-                    const box = child.getBoundingClientRect();
-                    const offset = y - box.top - box.height / 2;
-                    if (offset < 0 && offset > closest.offset) {
-                        return { offset: offset, element: child };
-                    } else {
-                        return closest;
-                    }
-                }, { offset: Number.NEGATIVE_INFINITY }).element;
-            }
-
-            function updateOpportunityStage(opportunityId, newStageId) {
-                console.log(`Moviendo Oportunidad ID: ${opportunityId} a Etapa ID: ${newStageId}`);
-
-                fetch(`/opportunities/${opportunityId}/update-stage`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Protección CSRF de Laravel
-                    },
-                    body: JSON.stringify({ stage_id: newStageId })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        // Intentar leer el cuerpo del error si no es una respuesta OK
-                        return response.json().then(errorData => {
-                            throw new Error(errorData.message || 'Error al actualizar la etapa.');
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Etapa actualizada con éxito:', data);
-                    // Opcional: mostrar un mensaje de éxito al usuario
-                    alert('Etapa de la oportunidad actualizada correctamente!');
-                    // Recargar la página o actualizar solo el elemento afectado si es necesario
-                    // location.reload();
-                })
-                .catch(error => {
-                    console.error('Error al actualizar la etapa:', error);
-                    alert('Hubo un error al mover la oportunidad: ' + error.message);
-                    // Opcional: revertir el movimiento visual si hay un error
-                    // location.reload(); // Recargar para reflejar el estado correcto si hubo un fallo
-                });
-            }
         });
-    </script>
+        
+        stageColumns.forEach(column => {
+            column.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                column.classList.add('drag-over');
+            });
+            
+            column.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+            
+            column.addEventListener('dragleave', () => {
+                column.classList.remove('drag-over');
+            });
+            
+            column.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                column.classList.remove('drag-over');
+                
+                const opportunityId = e.dataTransfer.getData('text/plain');
+                const newStageId = column.dataset.stageId;
+                const card = document.querySelector(`.kanban-card[data-opportunity-id="${opportunityId}"]`);
+                
+                if (!card) return;
+                
+                // Limpiar todas las columnas de etapa para esta oportunidad
+                document.querySelectorAll(`td.stage-column[data-opportunity-id="${opportunityId}"]`)
+                    .forEach(td => td.innerHTML = '');
+                
+                // Mover visualmente la tarjeta
+                column.innerHTML = '';
+                column.appendChild(card);
+                
+                try {
+                    const response = await fetch(`{{ url('/') }}/salesperson/opportunities/${opportunityId}/update-stage`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ stage_id: newStageId })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(await response.text());
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Estagio atualizado:', data);
+                    
+                    // Actualizar el atributo para futuros arrastres
+                    card.setAttribute('data-current-stage', newStageId);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erro ao atualizar o estgaio: ' + error.message);
+                    // Podrías agregar aquí la lógica para revertir visualmente el cambio
+                }
+            });
+        });
+    });
+</script>
 @endpush

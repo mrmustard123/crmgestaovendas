@@ -41,6 +41,9 @@ return new class extends Migration
 
             // `fk_op_status_id` tinyint(4) unsigned DEFAULT NULL (FK to opportunity_status)
             $table->tinyInteger('fk_op_status_id')->unsigned()->nullable();
+            
+            // `fk_stage_id` tinyint(4) unsigned DEFAULT NULL (FK to opportunity_stages)
+            $table->tinyInteger('fk_stage_id')->unsigned()->nullable();            
 
             // `fk_vendor` int(11) unsigned DEFAULT NULL (FK to vendor)
             $table->integer('fk_vendor')->unsigned()->nullable();
@@ -67,6 +70,15 @@ return new class extends Migration
                   ->onUpdate('cascade');
                   // Consider onDelete('restrict') o 'set null' dependiendo de la lógica de negocio si un estado de oportunidad se elimina.
 
+            
+            $table->foreign('fk_stage_id')
+                  ->references('stage_id')
+                  ->on('stage')
+                  ->onUpdate('cascade');
+                  // Consider onDelete('restrict') o 'set null' dependiendo de la lógica de negocio si un estado de oportunidad se elimina.
+            
+            
+            
             // CONSTRAINT `fk_person1` FOREIGN KEY (`fk_person`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE
             $table->foreign('fk_person')
                   ->references('person_id')

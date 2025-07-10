@@ -5,9 +5,7 @@ namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use App\Models\Doctrine\StageHistory;
+use App\Models\Doctrine\Stage;
 
 
 
@@ -60,12 +58,14 @@ class Opportunity
     // Relación ManyToOne con OpportunityStatus
     #[ORM\ManyToOne(targetEntity: OpportunityStatus::class)]
     #[ORM\JoinColumn(name: "fk_op_status_id", referencedColumnName: "opportunity_status_id", nullable: true, onDelete: "SET NULL")]
-    private ?OpportunityStatus $opportunityStatus = null;
+    private ?OpportunityStatus $opportunityStatus = null;  
     
-    /*ESTA ES UNA CONSTRUCCION ESPECIAL PARA ACCEDER AL STAGE_HISTORY DE ESTA OPPORTUNITY
-    #[ORM\ManyToOne(targetEntity: StageHistory::class)]
-    #[ORM\JoinColumn(name: "opportunity_id", referencedColumnName: "fk_opportunity")]
-    private StageHistory $stageHistory;*/
+    // `fk_stage_id` tinyint unsigned DEFAULT NULL
+    // Relación ManyToOne con OpportunityStatus
+    #[ORM\ManyToOne(targetEntity: Stage::class)]
+    #[ORM\JoinColumn(name: "fk_stage_id", referencedColumnName: "stage_id", nullable: true, onDelete: "SET NULL")]
+    private ?Stage $opportunityStage = null;    
+    
 
     // `fk_vendor` int unsigned DEFAULT NULL
     // Relación ManyToOne con Vendor
@@ -87,12 +87,6 @@ class Opportunity
     #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
     private ?DateTimeImmutable $updated_at = null;
     
-    /*
-    #[ORM\OneToMany(mappedBy: 'opportunity', targetEntity: StageHistory::class)]
-    private Collection $stageHistories;*/
-
-
-
 
     // --- Constructor (Opcional) ---
     public function __construct()
@@ -100,39 +94,27 @@ class Opportunity
         // Puedes inicializar valores por defecto aquí si no los defines en la propiedad
         // $this->estimated_sale = 0.00; // Ya definido en la propiedad
         // $this->priority = 'Low'; // Ya definido en la propiedad
-        //$this->stageHistories = new ArrayCollection();
+        $this->setDefaultStage(); //por default fk_stage=1
+        
     }
+    
+    
+    private function setDefaultStage(): void
+    {
+        $stageRepository = $this->entityManager->getRepository(Stage::class);
+        $firstStage = $stageRepository->findOneBy([], ['stage_id' => 'ASC']);
 
+        if ($firstStage) {
+            $this->opportunityStage = $firstStage;
+        }
+    }    
+
+    
+    
+    
     // --- Getters y Setters ---
 
-/*    public function getStageHistories(): Collection
-    {
-        return $this->stageHistories;
-    }
 
-    public function addStageHistory(StageHistory $stageHistory): self
-    {
-        if (!$this->stageHistories->contains($stageHistory)) {
-            $this->stageHistories[] = $stageHistory;
-            $stageHistory->setOpportunity($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStageHistory(StageHistory $stageHistory): self
-    {
-        if ($this->stageHistories->removeElement($stageHistory)) {
-            if ($stageHistory->getOpportunity() === $this) {
-                $stageHistory->setOpportunity(null);
-            }
-        }
-
-        return $this;
-    }    
-    */
-    
-    
     public function getOpportunityId(): int
     {
         return $this->opportunity_id;
@@ -241,10 +223,19 @@ class Opportunity
         return $this;
     }
     
-    /*public function getStageHistory(): ?StageHistory
+    
+    public function getOpportunityStage(): ?Stage
     {
-        return $this->stageHistory;
-    }  */      
+        return $this->opportunityStage;
+    }       
+
+    public function setOpportunityStage(?Stage $opportunityStage): self
+    {
+        $this->opportunityStage = $opportunityStage;
+        return $this;
+    }    
+    
+    
 
     public function getVendor(): ?Vendor
     {
