@@ -71,7 +71,9 @@ Route::middleware(['auth'])->group(function () { // <-- Este 'auth' protege todo
     Route::prefix('salesperson')->name('salesperson.')->middleware('salesperson-access')->group(function () { // <-- Aquí se aplica solo el middleware de ROL
         Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
         Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
-        Route::get('/myopportunities', [OpportunityController::class, 'myopportunities'])
-             ->name('myopportunities');
+        Route::get('/myopportunities', [OpportunityController::class, 'myopportunities'])->name('myopportunities');
+        Route::post('/opportunities/{opportunity}/update-stage', [OpportunityController::class, 'updateStage']);
+        Route::get('/activities/create', [ActivityController::class, 'create'])->name('activities.create');
+        
     });
 });

@@ -1,162 +1,257 @@
-<?php
-/*
-File: myopportunities.blade.php
-Author: Leonardo Tellez
-Purpose: Display a list of current vendor's opportunities.
-*/
-?>
-
 @extends('layouts.app')
 
 @section('page_title', 'Minhas Oportunidades')
 
+@push('styles')
+    <style>
+        .kanban-board {
+            display: flex;
+            gap: 1.5rem; /* Espacio entre columnas */
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            align-items: flex-start;
+        }
+        .kanban-column {
+            flex-shrink: 0;
+            width: 320px; /* Ancho fijo para las columnas */
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        .kanban-column-header {
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 1.25rem;
+            color: #333;
+            text-align: center;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #ccc;
+        }
+        .kanban-cards {
+            flex-grow: 1; /* Para que ocupe el espacio restante */
+            min-height: 100px; /* Permite arrastrar elementos */
+            padding-top: 0.5rem;
+        }
+        .kanban-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: grab;
+            display: flex; /* Para el icono y el nombre */
+            align-items: center;
+            justify-content: space-between; /* Icono a la derecha */
+        }
+        .kanban-card:active {
+            cursor: grabbing;
+        }
+        .kanban-card.dragging {
+            opacity: 0.5;
+            border: 2px dashed #007bff;
+        }
+        .card-emoji {
+            font-size: 1.5rem; /* Tamaño del emoji */
+            margin-right: 0.5rem;
+        }
+        /* Estilos para las columnas adicionales */
+        .action-column {
+            width: 150px; /* Ancho más pequeño para columnas de acción */
+            background-color: #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centrar contenido verticalmente */
+        }
+        .action-column-header {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: #555;
+        }
+        .action-button {
+            background-color: #007bff;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+            display: block;
+        }
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="container mx-auto px-4 py-8">
-        <div class="bg-white shadow-md rounded-lg p-6 max-w-7xl mx-auto">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Minhas Oportunidades</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Minhas Oportunidades</h2>
+        
+            {{-- Definir las etapas (stages) estáticamente, según tu seeder --}}
+            @php
+                $stages = [
+                    1 => ['id'=>1, 'name' => 'Apresentação', 'color' => '#007bff'],
+                    2 => ['id'=>2, 'name' => 'Proposta', 'color' => '#007bff'],
+                    3 => ['id'=>3, 'name' => 'Negociação', 'color' => '#007bff'],
+                    4 => ['id'=>4, 'name' => 'Ganho/Perdido', 'color' => '#007bff'],
+                ];
+            @endphp        
 
-            @if (session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded" role="alert">
-                    {{ session('success') }}
+        <div class="kanban-board">
+            {{-- Columna "Nome de la Opportunity" (No interactiva, solo lista) --}}
+            <div class="kanban-column">
+                <div class="kanban-column-header">Nome da Oportunidade</div>
+                <div class="kanban-cards">
+                    @foreach ($opportunities as $opportunity)
+                        <div class="kanban-card border-none shadow-none bg-transparent cursor-default">
+                            <span class="font-semibold text-gray-700">{{ $opportunity['opportunityName'] }}</span>
+                        </div>
+                    @endforeach
                 </div>
-            @endif
+            </div>
 
-            @if (session('error'))
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-white border border-gray-200">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nome da Oportunidade
-                            </th>
-                            <!--th class="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Lead
-                            </th>
-                            <th class="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Empresa
-                            </th>
-                            <th class="py-3 px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status Atual
-                            </th-->
-                            {{-- Columnas Kanban (inicialmente placeholders) --}}
-                            <th class="py-3 px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Apresentação
-                            </th>
-                            <th class="py-3 px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Proposta
-                            </th>
-                            <th class="py-3 px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Negociação
-                            </th>
-                            <th class="py-3 px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ganho/Perdido
-                            </th>
-                            <th class="py-3 px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nova Atividade
-                            </th>
-                            <th class="py-3 px-6 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Documentos
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
+            {{-- Columnas de Etapas (Arrastrables) --}}
+            @foreach ($stages as $stage)
+                <div class="kanban-column" data-stage-id="{{ $stage['id'] }}">
+                    <div class="kanban-column-header">{{ $stage['name'] }}</div>
+                    <div class="kanban-cards">
                         @forelse ($opportunities as $opportunity)
-                            <tr>
-                                <td class="py-4 px-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{ $opportunity->getOpportunityName() }}
-                                </td>
-                                <!--td class="py-4 px-6 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $opportunity->getPerson() ? $opportunity->getPerson()->getPersonName() : 'N/A' }}
-                                </td>
-                                <td class="py-4 px-6 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $opportunity->getPerson() && $opportunity->getPerson()->getCompany() ? $opportunity->getPerson()->getCompany()->getSocialReason() : 'N/A' }}
-                                </td>
-                                <td class="py-4 px-6 whitespace-nowrap text-sm text-gray-700 text-center">
-                                    {{ $opportunity->getOpportunityStatus() ? $opportunity->getOpportunityStatus()->getStatus() : 'N/A' }}
-                                </td-->
-
-                                {{-- Columnas Kanban (placeholders por ahora) --}}
-                                {{-- NOTA: La lógica para determinar la etapa actual de la Oportunidad
-                                        debería venir de la relación con StageHistory.
-                                        Por simplicidad inicial, estamos asumiendo que Opportunity
-                                        tiene un getStage() o que obtendremos la etapa actual de StageHistory.
-                                        Si Opportunity no tiene un getStage() directo, esto requerirá
-                                        una consulta adicional o ajustar el controlador para traer la etapa actual.
-                                        Por ahora, se usa getOpportunityStatus()->getStatus() como marcador.
-                                --}}
-                                <td class="py-4 px-6 whitespace-nowrap text-sm text-gray-700 text-center">
-                                    <div class="kanban-card p-2 rounded-md {{ $opportunity->getOpportunityStatus()->getStatus() == 'Apresentação' ? 'bg-indigo-100 border border-indigo-300' : 'bg-gray-50' }}">
-                                        {{-- Mostrar algo si está en esta etapa --}}
-                                        {{-- Esto es un placeholder. La lógica real del Kanban vendrá después. --}}
-                                        {{ $opportunity->getOpportunityStatus()->getStatus() == 'Apresentação' ? 'Atual' : '-' }}
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 whitespace-nowrap text-sm text-gray-700 text-center">
-                                    <div class="kanban-card p-2 rounded-md {{ $opportunity->getOpportunityStatus()->getStatus() == 'Proposta' ? 'bg-blue-100 border border-blue-300' : 'bg-gray-50' }}">
-                                        {{ $opportunity->getOpportunityStatus()->getStatus() == 'Proposta' ? 'Atual' : '-' }}
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 whitespace-nowrap text-sm text-gray-700 text-center">
-                                    <div class="kanban-card p-2 rounded-md {{ $opportunity->getOpportunityStatus()->getStatus() == 'Negociação' ? 'bg-purple-100 border border-purple-300' : 'bg-gray-50' }}">
-                                        {{ $opportunity->getOpportunityStatus()->getStatus() == 'Negociação' ? 'Atual' : '-' }}
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 whitespace-nowrap text-sm text-gray-700 text-center">
-                                    <div class="kanban-card p-2 rounded-md
-                                        @if ($opportunity->getOpportunityStatus()->getStatus() == 'Won')
-                                            bg-green-100 border border-green-300
-                                        @elseif ($opportunity->getOpportunityStatus()->getStatus() == 'Lost')
-                                            bg-red-100 border border-red-300
-                                        @else
-                                            bg-gray-50
-                                        @endif
-                                    ">
-                                        {{ $opportunity->getOpportunityStatus()->getStatus() == 'Won' ? 'Ganho' : ($opportunity->getOpportunityStatus()->getStatus() == 'Lost' ? 'Perdido' : '-') }}
-                                    </div>
-                                </td>
-
-                                {{-- Columna Nova Atividade --}}
-                                <td class="py-4 px-6 whitespace-nowrap text-center text-sm font-medium">
-                                    <a href="#" class="text-blue-600 hover:text-blue-900"
-                                       onclick="alert('Funcionalidade de Nova Atividade para {{ $opportunity->getOpportunityName() }} (ID: {{ $opportunity->getOpportunityId() }}) será implementada mais tarde.'); return false;">
-                                        &#x2B; {{-- Unicode para un signo de más --}}
-                                    </a>
-                                </td>
-
-                                {{-- Columna Documentos --}}
-                                <td class="py-4 px-6 whitespace-nowrap text-center text-sm font-medium">
-                                    <a href="#" class="text-green-600 hover:text-green-900"
-                                       onclick="alert('Funcionalidade de Documentos para {{ $opportunity->getOpportunityName() }} (ID: {{ $opportunity->getOpportunityId() }}) será implementada mais tarde.'); return false;">
-                                        &#x1F4C4; {{-- Unicode para un icono de documento --}}
-                                    </a>
-                                </td>
-                            </tr>
+                            @if (  isset($opportunity['stageId']) && ($opportunity['stageId'] == $stage['id'])  )
+                                <div class="kanban-card" draggable="true" data-opportunity-id="{{ $opportunity['opportunityId'] }}">                                    
+                                    {{-- Aquí puedes usar un emoji o un ícono --}}
+                                    <span class="card-emoji">&#x1F4B0;</span> {{-- Emoji de billetes --}}
+                                </div>
+                            @endif
                         @empty
-                            <tr>
-                                <td colspan="10" class="py-4 px-6 text-center text-sm text-gray-500">
-                                    Você não tem oportunidades ativas no momento.
-                                </td>
-                            </tr>
+                            {{-- No hay oportunidades en esta etapa --}}
                         @endforelse
-                    </tbody>
-                </table>
+                    </div>
+                </div>
+            @endforeach
+
+            {{-- Columna "Nova Atividade" --}}
+            <div class="action-column">
+                <div class="action-column-header">Nova Atividade</div>
+                <a href="" class="action-button">
+                    &#x270F;&#xFE0F; Nova Atividade
+                </a>
+            </div>
+
+            {{-- Columna "Documentos" --}}
+            <div class="action-column">
+                <div class="action-column-header">Documentos</div>
+                <a href="#" class="action-button" onclick="alert('Funcionalidade de Documentos será implementada.'); return false;">
+                    &#x1F4C4; Documentos
+                </a>
             </div>
         </div>
     </div>
 @endsection
 
-@push('styles')
-    <style>
-        .kanban-card {
-            min-width: 80px; /* Ancho mínimo para las tarjetas */
-            display: inline-block; /* Para que ocupen solo el espacio necesario */
-            font-size: 0.75rem; /* Texto más pequeño */
-            padding: 0.5rem; /* Pequeño padding para el contenido */
-        }
-    </style>
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const draggables = document.querySelectorAll('.kanban-card[draggable="true"]');
+            const columns = document.querySelectorAll('.kanban-column[data-stage-id]'); // Solo columnas de etapas
+
+            draggables.forEach(card => {
+                card.addEventListener('dragstart', () => {
+                    card.classList.add('dragging');
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                });
+            });
+
+            columns.forEach(column => {
+                column.addEventListener('dragover', e => {
+                    e.preventDefault(); // Permite el drop
+                    const afterElement = getDragAfterElement(column, e.clientY);
+                    const draggable = document.querySelector('.dragging');
+                    if (draggable) {
+                        if (afterElement == null) {
+                            column.querySelector('.kanban-cards').appendChild(draggable);
+                        } else {
+                            column.querySelector('.kanban-cards').insertBefore(draggable, afterElement);
+                        }
+                    }
+                });
+
+                column.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const draggable = document.querySelector('.dragging');
+                    if (draggable) {
+                        const opportunityId = draggable.dataset.opportunityId;
+                        const newStageId = column.dataset.stageId;
+
+                        // Solo procede si la etapa cambió (opcional, para evitar llamadas innecesarias)
+                        const currentStageId = draggable.closest('.kanban-column').dataset.stageId;
+                        if (currentStageId !== newStageId) {
+                            updateOpportunityStage(opportunityId, newStageId);
+                        }
+                    }
+                });
+            });
+
+            function getDragAfterElement(column, y) {
+                const draggableCards = [...column.querySelectorAll('.kanban-card:not(.dragging)')];
+
+                return draggableCards.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+
+            function updateOpportunityStage(opportunityId, newStageId) {
+                console.log(`Moviendo Oportunidad ID: ${opportunityId} a Etapa ID: ${newStageId}`);
+
+                fetch(`/opportunities/${opportunityId}/update-stage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Protección CSRF de Laravel
+                    },
+                    body: JSON.stringify({ stage_id: newStageId })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // Intentar leer el cuerpo del error si no es una respuesta OK
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Error al actualizar la etapa.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Etapa actualizada con éxito:', data);
+                    // Opcional: mostrar un mensaje de éxito al usuario
+                    alert('Etapa de la oportunidad actualizada correctamente!');
+                    // Recargar la página o actualizar solo el elemento afectado si es necesario
+                    // location.reload();
+                })
+                .catch(error => {
+                    console.error('Error al actualizar la etapa:', error);
+                    alert('Hubo un error al mover la oportunidad: ' + error.message);
+                    // Opcional: revertir el movimiento visual si hay un error
+                    // location.reload(); // Recargar para reflejar el estado correcto si hubo un fallo
+                });
+            }
+        });
+    </script>
 @endpush

@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
         
         //$this->call(LeadOriginSeeder::class);
         //$this->call(OpportunityStatusSeeder::class);
-        $this->call(UsersGroupSeeder::class);
+        //$this->call(UsersGroupSeeder::class);
+        $this->call(StageSeeder::class);
         
         
     }
