@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('page_title', 'Minhas Oportunidades'); ?>
 
-@section('page_title', 'Minhas Oportunidades')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         /* Contenedor principal */
         .table-container {
@@ -173,52 +171,107 @@
             }
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container mx-auto px-4 py-8">
         <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Minhas Oportunidades</h2>
         
-        @php
+        <?php
+                /*JUST FOR TESTING */    
+                    if (config('app.debug')) {
+                        xdebug_break();
+                    }
+                
+                    foreach ($opportunities as $stageHistory) {
+                        $opportunity_name = $stageHistory->getOpportunity()->getOpportunityName();
+                        $opportunity_id = $stageHistory->getOpportunity->getOpportunity();                    
+                        $stage_id = $stageHistory->getStage()->getStage();
+                    }        
+               /********************/
+        
+        ?>
+        
+                
+        <?php
             $stages = [
                 1 => ['id' => 1, 'name' => 'Apresentação', 'color' => '#007bff'],
                 2 => ['id' => 2, 'name' => 'Proposta', 'color' => '#007bff'],
                 3 => ['id' => 3, 'name' => 'Negociação', 'color' => '#007bff'],
-                4 => ['id' => 4, 'name' => 'Perdido', 'color' => '#007bff'],
-                5 => ['id' => 4, 'name' => 'Ganho', 'color' => '#007bff'],
             ];
-        @endphp
+        ?>
 
         <div class="table-container">
             <table class="kanban-table">
                 <thead>
                     <tr>
                         <th class="name-column">Nome da Oportunidade</th>
-                        @foreach ($stages as $stage)
-                            <th class="stage-column">{{ $stage['name'] }}</th>
-                        @endforeach
+                        <?php 
+                            $__currentLoopData = $stages; 
+                            $__env->addLoop($__currentLoopData); 
+                            foreach($__currentLoopData as $stage): 
+                                $__env->incrementLoopIndices(); 
+                                $loop = $__env->getLastLoop(); 
+                        ?>
+                                <th class="stage-column"><?php echo e($stage['name']); ?></th>
+                       <?php 
+                            endforeach; 
+                            $__env->popLoop(); 
+                            $loop = $__env->getLastLoop(); 
+                        ?>
                         <th class="action-column">Nova Atividade</th>
                         <th class="action-column">Documentos</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($opportunities as $opportunity)
-                        <tr data-opportunity-id="{{ $opportunity['opportunityId'] }}">
+                <?php 
+                    $__currentLoopData = $opportunities; $__env->addLoop($__currentLoopData); 
+                    foreach($__currentLoopData as $opportunity): 
+                        $__env->incrementLoopIndices(); 
+                        $loop = $__env->getLastLoop(); 
+                ?>
+                        <tr data-opportunity-id="<?php echo e($opportunity['opportunityId']); ?>">
                             <td class="name-column">
-                                {{ $opportunity['opportunityName'] }}
+                                <?php echo e($opportunity['opportunityName']); ?>
+
                             </td>
                             
-                            @foreach ($stages as $stage)
-                                <td class="stage-column" data-stage-id="{{ $stage['id'] }}">
-                                    @if ($opportunity['stageId'] == $stage['id'])
+                            <?php 
+                                $__currentLoopData = $stages; 
+                                $__env->addLoop($__currentLoopData); 
+                                foreach($__currentLoopData as $stage): 
+                                    $__env->incrementLoopIndices(); 
+                                    $loop = $__env->getLastLoop(); 
+                            ?>
+                                <td class="stage-column" data-stage-id="<?php echo e($stage['id']); ?>">
+                                   <?php 
+                                        if($opportunity['stageId'] == $stage['id']): ?>
                                         <div class="kanban-card" 
                                              draggable="true"
-                                             data-opportunity-id="{{ $opportunity['opportunityId'] }}">
+                                             data-opportunity-id="<?php echo e($opportunity['opportunityId']); ?>">
                                             <span class="card-emoji">&#x1F4B0;</span>
                                         </div>
-                                    @endif
+                                   <?php 
+                                        endif; 
+                                   ?>
                                 </td>
-                            @endforeach
+                            <?php 
+                                endforeach; 
+                                $__env->popLoop(); 
+                                $loop = $__env->getLastLoop(); 
+                            ?>
+                                
+                            <td class="action-column">
+                                <a href="#" class="action-button">
+                                    &#x270F;&#xFE0F; Perdido
+                                </a>
+                            </td>                                
+                                
+                            <td class="action-column">
+                                <a href="#" class="action-button">
+                                    &#x270F;&#xFE0F; Ganho
+                                </a>
+                            </td>                                
                             
                             <td class="action-column">
                                 <a href="#" class="action-button">
@@ -232,14 +285,18 @@
                                 </a>
                             </td>
                         </tr>
-                    @endforeach
+               <?php 
+                    endforeach; 
+                    $__env->popLoop(); 
+                    $loop = $__env->getLastLoop(); 
+                ?>
                 </tbody>
             </table>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const draggables = document.querySelectorAll('.kanban-card[draggable="true"]');
@@ -300,11 +357,11 @@
                 column.appendChild(card);
                 
                 try {
-                    const response = await fetch(`{{ url('/') }}/salesperson/opportunities/${opportunityId}/update-stage`, {
+                    const response = await fetch(`<?php echo e(url('/')); ?>/salesperson/opportunities/${opportunityId}/update-stage`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify({ stage_id: newStageId })
@@ -329,4 +386,5 @@
         });
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>

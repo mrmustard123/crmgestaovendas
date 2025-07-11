@@ -50,48 +50,30 @@ class OpportunityController extends Controller
             return redirect()->back()->with('error', 'Seu usuário não está vinculado a um vendedor. Entre em contato com o administrador.');
         }
 
-        // 3. Obtener los IDs de los estados de oportunidad "Ganho" (Won) y "Perdido" (Lost)
-        $opportunityStatusRepository = $this->entityManager->getRepository(OpportunityStatus::class);
-        $wonStatus = $opportunityStatusRepository->findOneBy(['status' => 'Won']);
-        $lostStatus = $opportunityStatusRepository->findOneBy(['status' => 'Lost']);
-
-        $excludedStatusIds = [];
-        if ($wonStatus) {
-            $excludedStatusIds[] = $wonStatus->getOpportunityStatusId();
-        }
-        if ($lostStatus) {
-            $excludedStatusIds[] = $lostStatus->getOpportunityStatusId();
-        }
-
-        // Si no se encuentran los estados "Won" o "Lost", asumimos que todas son activas
-        // o manejamos un error si es un requisito estricto.
-        if (empty($excludedStatusIds)) {
-             // Puedes loguear un warning o lanzar una excepción si estos estados son mandatorios
-             Log::warning("OpportunityStatus 'Won' ou 'Lost' não encontrados. Todas as oportunidades serão exibidas.");
-             // Para este caso, no excluimos nada, o puedes decidir redirigir con un error.
-             // Para la tabla, si no hay estados a excluir, simplemente no aplicamos el filtro.
-             $excludedStatusIds = [0]; // Usamos un ID que no existirá para que el NOT IN no filtre nada si no hay estados finales
-        }
+  
 
 
-        // 4. Consultar las oportunidades del vendedor que NO estén cerradas/perdidas
+    // 3. Consultar todas las oportunidades del vendedor con su historial de etapas
+    // donde won_lost sea NULL (oportunidades activas/en proceso) pero solo las ultimas etapas
         
-      
+        $queryBuilder = $this->entityManager->createQueryBuilder();        
 
-        
-    // Obtener todas las oportunidades del vendedor con su etapa actual
-        
-    $queryBuilder = $this->entityManager->createQueryBuilder();
-    $queryBuilder->select(
-            'o.opportunity_id AS opportunityId',
-            'o.opportunity_name AS opportunityName',
-            'IDENTITY(o.opportunityStage) AS stageId' // Usamos directamente la relación con Stage
-        )
-        ->from(Opportunity::class, 'o')
-        ->where('o.vendor = :vendorId')
-        ->setParameter('vendorId', $vendor->getVendorId());
-
-        $opportunities = $queryBuilder->getQuery()->getScalarResult();        
+        $queryBuilder->select('sh')
+            ->from(StageHistory::class, 'sh')
+            ->join('sh.fk_opportunity', 'o')
+            ->join('sh.fk_stage', 's')
+            ->where('o.vendor = :vendorId')
+            ->andWhere('sh.won_lost IS NULL')
+            ->andWhere('NOT EXISTS (
+                SELECT sh2.stage_hist_id 
+                FROM App\Models\Doctrine\StageHistory sh2 
+                WHERE sh2.fk_opportunity = sh.fk_opportunity 
+                AND sh2.fk_stage > sh.fk_stage 
+                AND sh2.won_lost IS NULL
+            )')
+            ->setParameter('vendorId', $vendor->getVendorId())
+            ->orderBy('sh.fk_opportunity', 'ASC');
+            $opportunities = $queryBuilder->getQuery()->getResult();        
   
         
         // 5. Pasar las oportunidades a la vista

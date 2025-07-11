@@ -11,7 +11,7 @@ use App\Models\Doctrine\Stage;
 
 #[ORM\Entity]
 #[ORM\Table(name: "opportunity")] // Mapea a la tabla 'opportunity'
-#[ORM\HasLifecycleCallbacks] // Necesario si usas PrePersist/PreUpdate para timestamps
+#[ORM\HasLifecycleCallbacks] // Necesario si usas PrePersist/PreUpdate para timestamps    
 class Opportunity
 {
     // `opportunity_id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY

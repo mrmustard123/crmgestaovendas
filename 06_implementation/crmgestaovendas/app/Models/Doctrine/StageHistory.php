@@ -1,56 +1,75 @@
 <?php
 
-namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
+namespace App\Models\Doctrine;
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
-use DateTime;
+//use DateTime;
+
+
 
 #[ORM\Entity]
-#[ORM\Table(name: "stage_history")] // Mapea a la tabla 'stage_history'
-#[ORM\HasLifecycleCallbacks] // Necesario si usas PrePersist/PreUpdate para timestamps
+#[ORM\Table(name: "stage_history")]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\UniqueConstraint(name: 'stage_history_unique', columns: ['fk_opportunity', 'fk_stage'])]
+#[ORM\Index(name: 'fk_stage4', columns: ['fk_stage'])]            
 class StageHistory
 {
-    // Clave primaria compuesta por claves foráneas
     #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Opportunity::class)]
-    #[ORM\JoinColumn(name: "fk_opportunity", referencedColumnName: "opportunity_id", onDelete: "CASCADE")]
-    private Opportunity $opportunity; // No es nullable porque es parte de la PK
-
-    #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: Stage::class)]
-    #[ORM\JoinColumn(name: "fk_stage", referencedColumnName: "stage_id", onDelete: "CASCADE")]
-    private Stage $stage; // No es nullable porque es parte de la PK
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\Column(type: "integer", name: "stage_hist_id", options: ["unsigned" => true])]
+    private int $stage_hist_id;
 
     // `won_lost` enum('won','lost') DEFAULT NULL
-    #[ORM\Column(type: "string", length: 4, nullable: true)] // Longitud suficiente para 'won' o 'lost'
+    #[ORM\Column(type: "string", length: 4, nullable: true, enumType: null)] // Longitud suficiente para 'won' o 'lost'
     private ?string $won_lost = null;
-
+    
     // `stage_hist_date` date NOT NULL
-    #[ORM\Column(type: "date")]
+    #[ORM\Column(type: "date", name: "stage_hist_date")]
     private \DateTime $stage_hist_date;
-
+    
     // `comments` varchar(255) DEFAULT NULL
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $comments = null;
 
     // `created_at` timestamp NULL DEFAULT NULL
-    #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
     private ?DateTimeImmutable $created_at = null;
 
     // `updated_at` timestamp NULL DEFAULT NULL
-    #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
     private ?DateTimeImmutable $updated_at = null;
+
+    #[ORM\ManyToOne(targetEntity: Opportunity::class)]
+    #[ORM\JoinColumn(name: "fk_opportunity", referencedColumnName: "opportunity_id", onDelete: "RESTRICT")]
+    private ?Opportunity $fk_opportunity;
+
+    #[ORM\ManyToOne(targetEntity: Stage::class)]
+    #[ORM\JoinColumn(name: "fk_stage", referencedColumnName: "stage_id", onDelete: "RESTRICT")]
+    private ?Stage $fk_stage;
 
 
     // --- Constructor ---
-    public function __construct(Opportunity $opportunity, Stage $stage)
+    public function __construct(/*Opportunity $opportunity, Stage $stage*/)
     {
-        $this->opportunity = $opportunity;
-        $this->stage = $stage;
+        /*$this->opportunity = $opportunity;
+        $this->stage = $stage; */
     }
 
     // --- Getters y Setters ---
+    
+        
+    public function getHistId(): int
+    {
+        return $this->stage_hist_id;
+    }
+    
+    public function setHistId(int $stage_hist_id)
+    {
+        $this->stage_hist_id = $stage_hist_id;
+        return $this;
+    }
+    
     public function getWonLost(): ?string
     {
         return $this->won_lost;
@@ -90,23 +109,23 @@ class StageHistory
 
     public function getOpportunity(): Opportunity
     {
-        return $this->opportunity;
+        return $this->fk_opportunity;
     }
 
     public function setOpportunity(Opportunity $opportunity): self
     {
-        $this->opportunity = $opportunity;
+        $this->fk_opportunity = $opportunity;
         return $this;
     }
 
     public function getStage(): Stage
     {
-        return $this->stage;
+        return $this->fk_stage;
     }
 
     public function setStage(Stage $stage): self
     {
-        $this->stage = $stage;
+        $this->fk_stage = $stage;
         return $this;
     }
 
