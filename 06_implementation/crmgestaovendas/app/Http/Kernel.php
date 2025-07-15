@@ -66,6 +66,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin-access' => \App\Http\Middleware\CanAccessAdminRoutes::class,
         'salesperson-access' => \App\Http\Middleware\CanAccessSalespersonRoutes::class,
+        'reports-access' => \App\Http\Middleware\CanAccessReportsRoutes::class,
     ];
     
     /**

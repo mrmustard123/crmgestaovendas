@@ -108,6 +108,9 @@ Email: leonardo616@gmail.com
                             <p class="font-bold">Oportunidades conquistadas neste mês</p>
                             <p class="text-2xl mt-2">15</p>
                             <p class="text-sm">vs 12 no mes pasado (+25%)</p>
+                            <a href="{{ route('reports.sales-funnel') }}" class="mt-2 inline-block text-sm text-green-800 hover:underline">
+                                Ver Relatório de Funil de Vendas
+                            </a>                            
                         </div>
                     @endif
 

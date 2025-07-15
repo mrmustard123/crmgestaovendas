@@ -59,13 +59,7 @@ class Opportunity
     #[ORM\ManyToOne(targetEntity: OpportunityStatus::class)]
     #[ORM\JoinColumn(name: "fk_op_status_id", referencedColumnName: "opportunity_status_id", nullable: true, onDelete: "SET NULL")]
     private ?OpportunityStatus $opportunityStatus = null;  
-    
-    // `fk_stage_id` tinyint unsigned DEFAULT NULL
-    // Relación ManyToOne con OpportunityStatus
-    #[ORM\ManyToOne(targetEntity: Stage::class)]
-    #[ORM\JoinColumn(name: "fk_stage_id", referencedColumnName: "stage_id", nullable: true, onDelete: "SET NULL")]
-    private ?Stage $opportunityStage = null;    
-    
+     
 
     // `fk_vendor` int unsigned DEFAULT NULL
     // Relación ManyToOne con Vendor
@@ -228,12 +222,6 @@ class Opportunity
     {
         return $this->opportunityStage;
     }       
-
-    public function setOpportunityStage(?Stage $opportunityStage): self
-    {
-        $this->opportunityStage = $opportunityStage;
-        return $this;
-    }    
     
     
 

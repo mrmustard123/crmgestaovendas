@@ -58,19 +58,38 @@ class LoginController extends Controller
     }
 
     /**
-     * Log the user out (invalidate the token).
+     * Log the user out (invalidate the token and clear web session).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function logout()
+    public function logout(Request $request) 
     {
         try {
-            // Invalida el token actual
-            JWTAuth::invalidate(JWTAuth::getToken()); 
-            return response()->json(['message' => 'Successfully logged out']);
+            // 1. Invalidar el token JWT (si se está usando para API)
+            // Esto solo es relevante si los usuarios también están usando el token JWT directamente.
+            // Si el logout es solo para la interfaz web, podria incluso omitir esta parte
+            // o manejarla de forma condicional.
+            if (JWTAuth::getToken()) { // Verifica si hay un token para invalidar
+                JWTAuth::invalidate(JWTAuth::getToken()); 
+            }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Failed to logout, please try again.'], 500);
+            // Puedo loggear el error, pero no debería impedir el logout de la sesión web
+            // \Log::error("JWT Logout Error: " . $e->getMessage());
         }
+
+        // 2. Cerrar la sesión de Laravel (guard 'web')
+        Auth::guard('web')->logout();
+
+        // 3. Invalidar la sesión para prevenir secuestro de sesión
+        $request->session()->invalidate();
+
+        // 4. Regenerar el token CSRF
+        $request->session()->regenerateToken();
+
+        // 5. Redirigir al usuario a la página de login o a donde necesites
+        // Para una aplicación web, normalmente redirigís.
+        return redirect('/login'); // O return redirect()->route('login');
     }
 
     /**

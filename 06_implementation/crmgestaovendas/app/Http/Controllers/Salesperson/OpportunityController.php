@@ -94,18 +94,22 @@ public function updateStage(Request $request, $id)
     if (!$opportunity) {
         return response()->json(['message' => 'Oportunidade não encontrada.'], 404);
     }
-
-    // Obtener la nueva etapa
+    
+    
     $newStage = $this->entityManager->getRepository(Stage::class)->find($newStageId);
     if (!$newStage) {
         return response()->json(['message' => 'Estagio não encontrado.'], 404);
     }
 
-    // Actualizar directamente el stage en la oportunidad
-    $opportunity->setOpportunityStage($newStage);
-
+    // Crear la nueva etapa
+    $newStageHistory = new StageHistory();
+    $newStageHistory->setStageHistDate(new \DateTime());
+    $newStageHistory->setComments('Oportunidade movida para novo estagio');
+    $newStageHistory->setOpportunity($opportunity);
+    $newStageHistory->setStage($newStage);
+            
     try {
-        $this->entityManager->persist($opportunity);
+        $this->entityManager->persist($newStageHistory);
         $this->entityManager->flush();
         
         return response()->json([
@@ -118,7 +122,71 @@ public function updateStage(Request $request, $id)
             'message' => 'Erro ao atualizar estágio: ' . $e->getMessage()
         ], 500);
     }
-} 
+    
+    } 
+    
+/*
+Estas últimas 4 columnas son botones. Cada botón tiene una función:
+Perdido: Señala que la oportunidad fue perdida, se actualiza la última StageHistory 
+cambiando de NULL a "lost" el campo won_lost y además la Opportunity se pone con status "Perdido".
+Ganho: Similar a Perdido, pero ya te imaginarás los cambios el los campos.
+Atividades: Este botón abre un formulario para registrar una nueva actividad relacionada con la oportunidad de esa fila.
+Documentos: Este botón sirve para hacer el upload de documentos relacionados a la oportunidad de esa fila.
+ */  
+    
+    public function markAsLost(Request $request, $opportunityId)
+    {
+        $stageHistoryId = $request->input('stage_history_id');
+
+        // 1. Actualizar StageHistory
+        $stageHistory = $this->entityManager->getRepository(StageHistory::class)->find($stageHistoryId);
+        $stageHistory->setWonLost('lost');
+
+        // 2. Actualizar OpportunityStatus
+        $lostStatus = $this->entityManager->getRepository(OpportunityStatus::class)
+                         ->findOneBy(['status' => 'Perdido']);
+
+        if ($lostStatus) {
+            $opportunity = $stageHistory->getOpportunity();
+            $opportunity->setOpportunityStatus($lostStatus);
+        }
+
+        $this->entityManager->flush();
+
+        return response()->json([
+            'message' => 'Oportunidade marcada como perdida com sucesso!',
+            'opportunity_id' => $opportunityId
+        ]);
+    }       
+    
+    
+    
+    public function markAsWon(Request $request, $opportunityId)
+    {
+        $stageHistoryId = $request->input('stage_history_id');
+
+        // 1. Actualizar StageHistory
+        $stageHistory = $this->entityManager->getRepository(StageHistory::class)->find($stageHistoryId);
+        $stageHistory->setWonLost('won');
+
+        // 2. Actualizar OpportunityStatus (asumiendo que tienes un repositorio)
+        $wonStatus = $this->entityManager->getRepository(OpportunityStatus::class)
+                        ->findOneBy(['status' => 'Won']);
+
+        if ($wonStatus) {
+            $opportunity = $stageHistory->getOpportunity();
+            $opportunity->setOpportunityStatus($wonStatus);
+        }
+
+        $this->entityManager->flush();
+
+        return response()->json([
+            'message' => 'Oportunidade marcada como ganha com sucesso!',
+            'opportunity_id' => $opportunityId
+        ]);
+    }                   
+
+ 
     
     
 }

@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Http\Controllers\Reports;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+//use App\Models\Opportunity; //para eloquent
+use App\Models\Doctrine\Opportunity;
+//use App\Models\OpportunityStatus; //para eloquent
+use App\Models\Doctrine\OpportunityStatus;
+//use App\Models\Stage;
+use App\Models\Doctrine\Stage;
+//use App\Models\StageHistory;
+use App\Models\Doctrine\StageHistory;
+use Carbon\Carbon;
+use Doctrine\ORM\EntityManagerInterface;
+
+
+class ForecastController1 extends Controller
+{
+    public function index(Request $request)
+    {
+        // Obtener el estado "Aberto"
+        $openStatus = OpportunityStatus::where('status', 'Aberto')->firstOrFail();
+        
+        // Sección 1: Pipeline Temporal
+        $period = $request->input('period', 3); // Default 3 meses
+        
+        $endDate = Carbon::now()->addMonths($period);
+        $pipelineData = $this->getPipelineData($openStatus->opportunity_status_id, $period);
+        
+        // Sección 2: Análisis por Etapa
+        $stageAnalysis = $this->getStageAnalysis($openStatus->opportunity_status_id);
+        
+        return view('forecast.index', [
+            'pipelineData' => $pipelineData,
+            'stageAnalysis' => $stageAnalysis,
+            'selectedPeriod' => $period
+        ]);
+    }
+    
+    
+    /*  Para eloquent
+    protected function getPipelineData($openStatusId, $months)
+    {
+        $endDate = Carbon::now()->addMonths($months);
+        
+        return Opportunity::where('fk_op_status_id', $openStatusId)
+            ->whereNotNull('expected_closing_date')
+            ->where('expected_closing_date', '<=', $endDate)
+            ->selectRaw('
+                DATE_FORMAT(expected_closing_date, "%b/%Y") as month,
+                SUM(estimated_sale) as total_value,
+                COUNT(*) as opportunity_count
+            ')
+            ->groupBy('month')
+            ->orderBy('expected_closing_date')
+            ->get();
+    }
+     */
+     
+    protected function getPipelineData($openStatusId, $months)
+    {
+        $endDate = new \DateTime();
+        $endDate->add(new \DateInterval("P{$months}M"));
+
+        return $this->em->createQueryBuilder()
+            ->select([
+                "DATE_FORMAT(o.expectedClosingDate, '%b/%Y') as month",
+                'SUM(o.estimatedSale) as totalValue',
+                'COUNT(o.id) as opportunityCount'
+            ])
+            ->from(Opportunity::class, 'o')
+            ->where('o.opStatus = :status')
+            ->andWhere('o.expectedClosingDate IS NOT NULL')
+            ->andWhere('o.expectedClosingDate <= :endDate')
+            ->setParameter('status', $openStatusId)
+            ->setParameter('endDate', $endDate)
+            ->groupBy('month')
+            ->orderBy('o.expectedClosingDate')
+            ->getQuery()
+            ->getResult();
+    }
+    
+    protected function getStageAnalysis($openStatusId)
+    {
+        // Obtener probabilidades por defecto desde configuración
+        $defaultProbabilities = [
+            'Apresentação' => 15,
+            'Proposta' => 35,
+            'Negociação' => 60
+        ];
+        
+        // Obtener datos por etapa
+        return Stage::withCount(['opportunities' => function($query) use ($openStatusId) {
+                $query->where('fk_op_status_id', $openStatusId);
+            }])
+            ->withSum(['opportunities' => function($query) use ($openStatusId) {
+                $query->where('fk_op_status_id', $openStatusId);
+            }], 'estimated_sale')
+            ->get()
+            ->map(function($stage) use ($defaultProbabilities) {
+                return [
+                    'stage_name' => $stage->stage_name,
+                    'total_value' => $stage->opportunities_sum_estimated_sale,
+                    'opportunity_count' => $stage->opportunities_count,
+                    'probability' => $defaultProbabilities[$stage->stage_name] ?? 0
+                ];
+            });
+    }
+}

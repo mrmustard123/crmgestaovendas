@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\ProductServiceController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Salesperson\LeadController;
 use App\Http\Controllers\Salesperson\OpportunityController;
+use App\Http\Controllers\Reports\SalesFunnelController;
+use App\Http\Controllers\Reports\ForecastController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,7 +75,12 @@ Route::middleware(['auth'])->group(function () { // <-- Este 'auth' protege todo
         Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
         Route::get('/myopportunities', [OpportunityController::class, 'myopportunities'])->name('myopportunities');
         Route::post('/opportunities/{id}/update-stage', [OpportunityController::class, 'updateStage']);
-        //Route::get('/activities/create', [ActivityController::class, 'create'])->name('activities.create');
-        
+        Route::post('/opportunities/{opportunity}/mark-as-won', [OpportunityController::class, 'markAsWon'])->name('opportunities.mark-as-won');
+        Route::post('/opportunities/{opportunity}/mark-as-lost', [OpportunityController::class, 'markAsLost'])->name('opportunities.mark-as-lost');
+        //Route::get('/activities/create', [ActivityController::class, 'create'])->name('activities.create');        
+    });
+    Route::prefix('reports')->name('reports.')->middleware(['reports-access'])->group(function () {    
+        Route::get('/sales-funnel', [SalesFunnelController::class, 'index'])->name('sales-funnel');
+        Route::get('/forecast', [ForecastController::class, 'index'])->name('forecast');
     });
 });

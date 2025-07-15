@@ -66,9 +66,15 @@ Email: leonardo616@gmail.com
                                 <span class="block py-2 px-4 text-gray-400 font-semibold">Gerência</span>
                             </li>
                             <li>
-                                <a href="#" class="block py-2 px-4 rounded hover:bg-gray-700">Ver Relatórios</a>
+                            <a href="{{ route('reports.sales-funnel') }}" class="block py-2 px-4 rounded hover:bg-gray-700">
+                                Ver Relatório de Funil de Vendas
+                            </a>  
                             </li>
-                            {{-- Más ítems para gerentes --}}
+                            <li>
+                            <a href="{{ route('reports.forecast') }}" class="block py-2 px-4 rounded hover:bg-gray-700">
+                                Ver Relatório de Forecast
+                            </a>  
+                            </li>
                         @endif
 
                         {{-- Menú para Vendedores (ejemplo) --}}

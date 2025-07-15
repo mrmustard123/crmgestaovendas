@@ -25,7 +25,7 @@ class StageHistory
     private ?string $won_lost = null;
     
     // `stage_hist_date` date NOT NULL
-    #[ORM\Column(type: "date", name: "stage_hist_date")]
+    #[ORM\Column(type: "datetime", name: "stage_hist_date")]
     private \DateTime $stage_hist_date;
     
     // `comments` varchar(255) DEFAULT NULL
@@ -59,12 +59,12 @@ class StageHistory
     // --- Getters y Setters ---
     
         
-    public function getHistId(): int
+    public function getStageHistId(): int
     {
         return $this->stage_hist_id;
     }
     
-    public function setHistId(int $stage_hist_id)
+    public function setStageHistId(int $stage_hist_id)
     {
         $this->stage_hist_id = $stage_hist_id;
         return $this;

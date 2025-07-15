@@ -527,7 +527,7 @@ Email: leonardo616@gmail.com
         
         
         // =============================================================
-        // NUEVO CÓDIGO PARA EL FORMATO DE FECHA dd/mm/yyyy
+        // CÓDIGO PARA EL FORMATO DE FECHA dd/mm/yyyy
         // =============================================================
         const expectedClosingDatePicker = document.getElementById('expected_closing_date_picker');
         const expectedClosingDateDisplay = document.getElementById('expected_closing_date_display');

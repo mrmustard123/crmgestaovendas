@@ -20,7 +20,7 @@ return new class extends Migration
                    /// `won_lost` enum('won','lost') DEFAULT NULL
                    $table->enum('won_lost', ['won', 'lost'])->nullable();
                    // `stage_hist_date` date NOT NULL
-                   $table->date('stage_hist_date');
+                   $table->dateTime('stage_hist_date');
                     // `comments` varchar(255) DEFAULT NULL
                    $table->string('comments', 255)->nullable();
 
