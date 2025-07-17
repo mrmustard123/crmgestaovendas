@@ -228,7 +228,7 @@
 
 @section('content')
     <div class="container mx-auto px-4 py-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Minhas Oportunidades</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Minhas Oportunidades (Em Aberto)</h2>
         
         @php
             $stages = [
@@ -261,7 +261,7 @@
                         
                         <tr data-opportunity-id="{{ $opportunity->getOpportunityId() }}">
                             <td class="name-column">
-                                <a href="#">{{ $opportunity->getOpportunityName() }}</a>
+                                <a href="{{ route('salesperson.opportunities.edit', ['id' => $opportunity->getOpportunityId()]) }}">{{ $opportunity->getOpportunityName() }}</a>                                
                             </td>
                             
                             @foreach ($stages as $stage)
@@ -295,14 +295,14 @@
                             
                             <td class="action-column">  
                                 <div class="flex flex-col gap-2">
-                                    <a href="#" class="action-button">
+                                    <a href="{{ route('salesperson.opportunities.activities.create', ['opportunityId' => $opportunity->getOpportunityId()]) }}" class="action-button">
                                         &#x270F;&#xFE0F; Nova Atividade
                                     </a>
                                 </div>
                             </td>
                             <td class="action-column">
                                 <div class="flex flex-col gap-2">
-                                    <a href="#" class="action-button">
+                                     <a href="{{ route('salesperson.opportunities.documents.upload', ['opportunityId' => $opportunity->getOpportunityId()]) }}" class="action-button">
                                         &#x1F4C4; Documentos
                                     </a>
                                 </div>

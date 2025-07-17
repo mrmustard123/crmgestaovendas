@@ -6,8 +6,6 @@ Created on: 11 jul. de 2025 23:46:18
 Email: leonardo616@gmail.com
 */
 
-
-
 namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
@@ -38,18 +36,35 @@ class SalesFunnelController extends Controller
                ->from(StageHistory::class, 'sh')
                ->join('sh.fk_stage', 's')
                ->where('sh.won_lost = :won')
-               ->andWhere('sh.stage_hist_date BETWEEN :start AND :end')
+               ->andWhere('sh.stage_hist_date >= :start AND sh.stage_hist_date <= :end')
                ->orderBy('sh.fk_stage')
                ->setParameter('won', 'won')
                ->setParameter('start', $startDate)
                ->setParameter('end', $endDate);
 
             $wonHistories = $qb->getQuery()->getResult();
+            
+            
+            $qb1 = $this->entityManager->createQueryBuilder();
+            $qb1->select('sh', 's')
+               ->from(StageHistory::class, 'sh')
+               ->join('sh.fk_stage', 's')
+               ->where('sh.won_lost = :lost')
+               ->andWhere('sh.stage_hist_date >= :start AND sh.stage_hist_date <= :end')
+               ->orderBy('sh.fk_stage')
+               ->setParameter('lost', 'lost')
+               ->setParameter('start', $startDate)
+               ->setParameter('end', $endDate);
+
+            $lostHistories = $qb1->getQuery()->getResult();
 
             // Calcular total de oportunidades ganadas
-            $totalWon = count($wonHistories);
+            $totalWon = count($wonHistories);            
+
+            // Calcular total de oportunidades perdidas
+            $totalLost = count($lostHistories);
             
-            if ($totalWon > 0) {
+            if (($totalWon > 0) || ($totalLost > 0)) {
                 // Agrupar por etapa
                 $grouped = [];
                 foreach ($wonHistories as $history) {
@@ -60,15 +75,38 @@ class SalesFunnelController extends Controller
                     $grouped[$stageName]++;
                 }
                 
-                // Calcular porcentajes
+                $grouped1 = [];
+                foreach ($lostHistories as $history) {
+                    $stageName = $history->getStage()->getStageName();
+                    if (!isset($grouped1[$stageName])) {
+                        $grouped1[$stageName] = 0;
+                    }
+                    $grouped1[$stageName]++;
+                }                
+                
+                // Calcular porcentajes won
                 foreach ($grouped as $stageName => $count) {
-                    $conversionRates[$stageName] = ($count / $totalWon) * 100;
-                }
+                    $conversionRatesWon[$stageName] = (is_countable($totalWon))? 0:($count / $totalWon) * 100;                   
+                }                                
+                // Calcular porcentajes lost
+                foreach ($grouped1 as $stageName => $count) {
+                    $conversionRatesLost[$stageName] = (is_countable($totalLost))? 0:($count / $totalLost) * 100;                   
+                }                
+ 
             }
         }
         
+        $fechaOriginal = $startDate;
+        $startDate = date('d/m/Y', strtotime($fechaOriginal));      
+        
+        $fechaOriginal = $endDate;
+        $endDate = date('d/m/Y', strtotime($fechaOriginal));            
+        
         return view('reports.sales_funnel', [
-            'conversionRates' => $conversionRates ?? null,
-        ]);
+            'conversionRatesWon' => $conversionRatesWon ?? null,
+            'conversionRatesLost' => $conversionRatesLost ?? null,
+            'startDate' => $startDate,
+            'endDate' =>  $endDate,   
+            ]);    
     }
 }

@@ -73,9 +73,11 @@ Email: leonardo616@gmail.com
                         {{-- Este bucle será rellenado por el controlador --}}
                         @isset($userGroups) {{-- Solo si $userGroups está definida --}}
                             @foreach ($userGroups as $group)
+                                @if($group->getGroupName() != 'Vendedores')
                                 <option value="{{ $group->getUserGroupId() }}" {{ old('user_group_id') == $group->getUserGroupId() ? 'selected' : '' }}>
                                     {{ $group->getGroupName() }}
                                 </option>
+                                @endif
                             @endforeach
                         @endisset
                     </select>

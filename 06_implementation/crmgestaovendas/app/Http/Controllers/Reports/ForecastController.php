@@ -1,14 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Reports;
 
-use App\Models\Doctrine\Opportunity;
-use App\Models\Doctrine\OpportunityStatus;
-use App\Models\Doctrine\Stage;
-use App\Models\Doctrine\StageHistory;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+//use App\Models\Opportunity; //para eloquent
+use App\Models\Doctrine\Opportunity;
+//use App\Models\OpportunityStatus; //para eloquent
+use App\Models\Doctrine\OpportunityStatus;
+//use App\Models\Stage;
+use App\Models\Doctrine\Stage;
+//use App\Models\StageHistory;
+use App\Models\Doctrine\StageHistory;
 use Carbon\Carbon;
+use Doctrine\ORM\EntityManagerInterface;
+
 
 class ForecastController extends Controller
 {
@@ -36,20 +42,25 @@ class ForecastController extends Controller
         // Sección 2: Análisis por Etapa
         $stageAnalysis = $this->getStageAnalysis($openStatus);
         
-        return view('forecast.index', [
+        return view('reports.forecast', [
             'pipelineData' => $pipelineData,
             'stageAnalysis' => $stageAnalysis,
             'selectedPeriod' => $period
         ]);
     }
     
+    
     protected function getPipelineData(OpportunityStatus $openStatus, int $months)
     {
         $endDate = Carbon::now()->addMonths($months);
+
         
-        $query = $this->entityManager->createQueryBuilder()
+        /*Original: da un error en DATE_FORMAT*/
+       /*
+        $query0 = $this->entityManager->createQueryBuilder()
             ->select([
-                "DATE_FORMAT(o.expected_closing_date, '%b/%Y') as month",
+                "o.expected_closing_date as month",//<-- Esto no funciona por que necesita mes/anio para hacer el group by
+                //"DATE_FORMAT(o.expected_closing_date, '%b/%Y') as month", <-- DA ERROR DATE_FORMAT
                 'SUM(o.estimated_sale) as total_value',
                 'COUNT(o.opportunity_id) as opportunity_count'
             ])
@@ -63,9 +74,111 @@ class ForecastController extends Controller
             ->orderBy('o.expected_closing_date')
             ->getQuery();
             
-        return $query->getResult();
+        $result0 = $query0->getResult();        
+        */
+        
+        /*Opción 1: Usar Native SQL Query */
+        // Usar Native SQL para funciones específicas de MySQL           
+        $sql = "
+            SELECT 
+                DATE_FORMAT(o.expected_closing_date, '%b/%Y') as month,
+                SUM(o.estimated_sale) as total_value,
+                COUNT(o.opportunity_id) as opportunity_count
+            FROM opportunity o
+            WHERE o.fk_op_status_id = :status
+            AND o.expected_closing_date IS NOT NULL
+            AND o.expected_closing_date <= :endDate
+            GROUP BY DATE_FORMAT(o.expected_closing_date, '%b/%Y')
+	    ORDER BY DATE_FORMAT(o.expected_closing_date, '%b/%Y')
+        ";
+
+        $connection = $this->entityManager->getConnection();
+        $stmt = $connection->prepare($sql);
+        $status = $openStatus->getOpportunityStatusId();
+        $endDate = $endDate->format('Y-m-d');
+        $stmt->bindValue(':status', $status);
+        $stmt->bindValue(':endDate', $endDate);
+   
+        $result = collect($stmt->executeQuery()->fetchAllAssociative());
+
+        return $result;
     }
     
+       
+    
+    protected function getStageAnalysis(OpportunityStatus $openStatus)
+    {
+        // Obtener probabilidades por defecto desde configuración
+        $defaultProbabilities = [
+            'Apresentação' => 15,
+            'Proposta' => 35,
+            'Negociação' => 60
+        ];
+
+        // Obtener todas las etapas
+        $stages = $this->entityManager->getRepository(Stage::class)->findAll();
+
+        $stageAnalysis = [];
+
+        foreach ($stages as $stage) {
+            // Native SQL para contar oportunidades por etapa
+            $countSql = "
+                SELECT COUNT(DISTINCT o.opportunity_id) 
+                FROM opportunity o
+                WHERE o.fk_op_status_id = :status
+                AND EXISTS (
+                    SELECT 1 FROM stage_history sh1 
+                    WHERE sh1.fk_opportunity = o.opportunity_id 
+                    AND sh1.fk_stage = :stageId
+                    AND sh1.stage_hist_date = (
+                        SELECT MAX(sh2.stage_hist_date) 
+                        FROM stage_history sh2 
+                        WHERE sh2.fk_opportunity = o.opportunity_id
+                    )
+                )
+            ";
+
+            $connection = $this->entityManager->getConnection();
+            $stmt = $connection->prepare($countSql);
+            $stmt->bindValue(':status', $openStatus->getOpportunityStatusId());
+            $stmt->bindValue(':stageId', $stage->getStageId());
+            $opportunityCount = $stmt->executeQuery()->fetchOne();
+
+            // Native SQL para sumar valores por etapa
+            $sumSql = "
+                SELECT COALESCE(SUM(o.estimated_sale), 0) 
+                FROM opportunity o
+                WHERE o.fk_op_status_id = :status
+                AND EXISTS (
+                    SELECT 1 FROM stage_history sh1 
+                    WHERE sh1.fk_opportunity = o.opportunity_id 
+                    AND sh1.fk_stage = :stageId
+                    AND sh1.stage_hist_date = (
+                        SELECT MAX(sh2.stage_hist_date) 
+                        FROM stage_history sh2 
+                        WHERE sh2.fk_opportunity = o.opportunity_id
+                    )
+                )
+            ";
+
+            $stmt = $connection->prepare($sumSql);
+            $stmt->bindValue(':status', $openStatus->getOpportunityStatusId());
+            $stmt->bindValue(':stageId', $stage->getStageId());
+            $totalValue = $stmt->executeQuery()->fetchOne();
+
+            $stageAnalysis[] = [
+                'stage_name' => $stage->getStageName(),
+                'color_hex' => $stage->getColorHex(),
+                'total_value' => (float) $totalValue,
+                'opportunity_count' => (int) $opportunityCount,
+                'probability' => $defaultProbabilities[$stage->getStageName()] ?? 0
+            ];
+        }
+
+        return $stageAnalysis;
+    }
+    
+   /* 
     protected function getStageAnalysis(OpportunityStatus $openStatus)
     {
         // Obtener probabilidades por defecto desde configuración
@@ -90,9 +203,9 @@ class ForecastController extends Controller
                     SELECT sh FROM App\Models\Doctrine\StageHistory sh 
                     WHERE sh.fk_opportunity = o.opportunity_id 
                     AND sh.fk_stage = :stageId
-                    ORDER BY sh.stage_hist_date DESC
-                    LIMIT 1
-                )')
+                    ORDER BY sh.stage_hist_date DESC 
+                    LIMIT 1 
+                )') //DOCTRINE NO SOPORTA LIMIT!!!
                 ->setParameter('status', $openStatus->getOpportunityStatusId())
                 ->setParameter('stageId', $stage->getStageId())
                 ->getQuery();
@@ -127,4 +240,5 @@ class ForecastController extends Controller
         
         return $stageAnalysis;
     }
+    */
 }

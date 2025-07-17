@@ -8,8 +8,12 @@ use App\Http\Controllers\Admin\ProductServiceController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Salesperson\LeadController;
 use App\Http\Controllers\Salesperson\OpportunityController;
+use App\Http\Controllers\Salesperson\OpportunityCrudController;
+use App\Http\Controllers\Salesperson\ActivityController;
+use App\Http\Controllers\Salesperson\DocumentController;
 use App\Http\Controllers\Reports\SalesFunnelController;
 use App\Http\Controllers\Reports\ForecastController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -77,7 +81,12 @@ Route::middleware(['auth'])->group(function () { // <-- Este 'auth' protege todo
         Route::post('/opportunities/{id}/update-stage', [OpportunityController::class, 'updateStage']);
         Route::post('/opportunities/{opportunity}/mark-as-won', [OpportunityController::class, 'markAsWon'])->name('opportunities.mark-as-won');
         Route::post('/opportunities/{opportunity}/mark-as-lost', [OpportunityController::class, 'markAsLost'])->name('opportunities.mark-as-lost');
-        //Route::get('/activities/create', [ActivityController::class, 'create'])->name('activities.create');        
+        Route::get('/opportunities/{id}/edit', [OpportunityCrudController::class, 'edit'])->name('opportunities.edit');
+        Route::put('/opportunities/{id}', [OpportunityCrudController::class, 'update'])->name('opportunities.update');        
+        Route::get('/opportunities/{opportunityId}/activities/create', [ActivityController::class, 'create'])->name('opportunities.activities.create');
+        Route::post('/opportunities/{opportunityId}/activities', [ActivityController::class, 'store'])->name('opportunities.activities.store');     
+        Route::get('/opportunities/{opportunityId}/documents/upload', [DocumentController::class, 'create'])->name('opportunities.documents.upload');
+        Route::post('/opportunities/{opportunityId}/documents', [DocumentController::class, 'store'])->name('opportunities.documents.store');        
     });
     Route::prefix('reports')->name('reports.')->middleware(['reports-access'])->group(function () {    
         Route::get('/sales-funnel', [SalesFunnelController::class, 'index'])->name('sales-funnel');

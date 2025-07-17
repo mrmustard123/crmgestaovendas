@@ -15,12 +15,10 @@ class StageSeeder extends Seeder
         Stage::truncate();
 
         $stages = [
-            ['stage_id' => 1, 'stage_name' => 'Apresentação', 'description' => '', 'stage_order' => 0, 'active' => 1, 'color_hex' => '#007bff'],
-            ['stage_id' => 2, 'stage_name' => 'Proposta', 'description' => '', 'stage_order' => 1, 'active' => 1, 'color_hex' => '#007bff'],
-            ['stage_id' => 3, 'stage_name' => 'Negociação', 'description' => '', 'stage_order' => 2, 'active' => 1, 'color_hex' => '#007bff'],
-            ['stage_id' => 4, 'stage_name' => 'Perdido', 'description' => '', 'stage_order' => 3, 'active' => 1, 'color_hex' => '#007bff'],
-            ['stage_id' => 5, 'stage_name' => 'Ganho', 'description' => '', 'stage_order' => 3, 'active' => 1, 'color_hex' => '#007bff'],
-        ];
+            ['stage_id' => 1, 'stage_name' => 'Apresentação', 'description' => '', 'stage_order' => 0, 'active' => 1, 'color_hex' => '#03fca1'],
+            ['stage_id' => 2, 'stage_name' => 'Proposta', 'description' => '', 'stage_order' => 1, 'active' => 1, 'color_hex' => '#03fcfc'],
+            ['stage_id' => 3, 'stage_name' => 'Negociação', 'description' => '', 'stage_order' => 2, 'active' => 1, 'color_hex' => '#fac466'],
+         ];
 
         foreach ($stages as $stage) {
             Stage::create($stage);

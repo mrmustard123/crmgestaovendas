@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
+namespace App\Models\Doctrine;
 
 use Doctrine\ORM\Mapping as ORM;
-use DateTimeImmutable; // Para los campos de fecha y hora
+use DateTimeImmutable; 
+use DateTime;
 
 #[ORM\Entity]
-#[ORM\Table(name: "document")] // Mapea a la tabla 'document'
-#[ORM\HasLifecycleCallbacks] // Necesario si usas PrePersist/PreUpdate para timestamps
+#[ORM\Table(name: "document")]
+#[ORM\HasLifecycleCallbacks] // Necesario para los timestamps automáticos
 class Document
 {
     // `document_id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY
@@ -16,159 +17,136 @@ class Document
     #[ORM\GeneratedValue(strategy: "AUTO")]
     private int $document_id;
 
-    // `doc_name` varchar(200) NOT NULL
-    #[ORM\Column(type: "string", length: 200)]
-    private string $doc_name;
-
-    // `filename` varchar(255) NOT NULL
     #[ORM\Column(type: "string", length: 255)]
-    private string $filename;
+    private string $file_name; // Cambiado de `doc_name` a `file_name` para el nombre original del archivo subido
 
-    // `file_type` varchar(10) DEFAULT NULL
-    #[ORM\Column(type: "string", length: 10, nullable: true)]
-    private ?string $file_type = null;
+    #[ORM\Column(type: "string", length: 255)]
+    private string $file_path; // Ruta relativa donde se guarda el archivo en el disco (ej. documents/1/mi_doc.pdf)
 
-    // `size_bytes` bigint DEFAULT NULL
-    #[ORM\Column(type: "bigint", nullable: true)]
-    private ?int $size_bytes = null;
+    #[ORM\Column(type: "string", length: 100, nullable: true)]
+    private ?string $mime_type = null; // Tipo MIME del archivo (ej. application/pdf), cambiado de `file_type` para mayor claridad
 
-    // `file_path` varchar(500) DEFAULT NULL
-    #[ORM\Column(type: "string", length: 500, nullable: true)]
-    private ?string $file_path = null;
+    #[ORM\Column(type: "bigint", nullable: true)] // bigint para tamaños de archivo grandes
+    private ?int $file_size = null; // Tamaño del archivo en bytes, cambiado de `size_bytes`
 
-    // `description` text DEFAULT NULL
     #[ORM\Column(type: "text", nullable: true)]
-    private ?string $description = null;
+    private ?string $description = null; // Descripción opcional del documento
 
-    // `fk_opportunity` int unsigned DEFAULT NULL
     // Relación ManyToOne con Opportunity
-    #[ORM\ManyToOne(targetEntity: Opportunity::class)] // Asume que Opportunity también será una Entidad Doctrine
-    #[ORM\JoinColumn(name: "fk_opportunity", referencedColumnName: "opportunity_id", nullable: true, onDelete: "SET NULL")]
-    private ?Opportunity $opportunity = null;
+    #[ORM\ManyToOne(targetEntity: Opportunity::class)]
+    #[ORM\JoinColumn(name: "fk_opportunity", referencedColumnName: "opportunity_id", nullable: false)] // Cambiado a `nullable: false` si un documento siempre debe tener una oportunidad
+    private Opportunity $opportunity;
 
-    // `created_at` timestamp NULL DEFAULT NULL
-    #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTimeImmutable $created_at = null;
+    #[ORM\Column(type: "date", nullable: true)]
+    private ?\DateTime $uploaded_at = null; // Nuevo campo para la fecha de subida
 
-    // `updated_at` timestamp NULL DEFAULT NULL
-    #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?DateTimeImmutable $updated_at = null;
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $created_at = null; // Para control general del registro
 
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $updated_at = null; // Para control general del registro
 
     // --- Getters y Setters ---
-    public function getDocumentId(): int
-    {
-        return $this->document_id;
+    public function getDocumentId(): int 
+    { 
+        return $this->document_id;     
+    }
+    public function getFileName(): string 
+    { 
+        return $this->file_name;         
+    }
+    public function setFileName(string $file_name): self 
+    { 
+        $this->file_name = $file_name; return $this;         
+    }
+    public function getFilePath(): string 
+    { 
+        return $this->file_path;         
+    }
+    public function setFilePath(string $file_path): self 
+    { 
+        $this->file_path = $file_path; return $this;         
+    }
+    public function getMimeType(): ?string 
+    { 
+        return $this->mime_type;         
+    }
+    public function setMimeType(?string $mime_type): self 
+    { 
+        $this->mime_type = $mime_type; return $this;         
+    }
+    public function getFileSize(): ?int 
+    { 
+        return $this->file_size;         
+    }
+    public function setFileSize(?int $file_size): self 
+    { 
+        $this->file_size = $file_size; return $this;         
+    }
+    public function getDescription(): ?string 
+    { 
+        return $this->description;         
     }
 
-    public function getDocName(): string
-    {
-        return $this->doc_name;
+    public function setDescription(?string $description): self 
+    { 
+        $this->description = $description; 
+        return $this;         
+    }
+    public function getOpportunity(): Opportunity 
+    { 
+        return $this->opportunity;         
+    }
+    
+    public function setOpportunity(?Opportunity $opportunity): self 
+    { 
+        $this->opportunity = $opportunity; 
+        return $this;         
+    }
+    
+    public function getUploadedAt(): ?DateTimeImmutable 
+    { 
+        return $this->uploaded_at;         
+    }
+    public function setUploadedAt(?DateTimeImmutable $uploaded_at): self 
+    { 
+        $this->uploaded_at = $uploaded_at; 
+        return $this;         
+    }
+    public function getCreatedAt(): ?DateTimeImmutable 
+    { 
+        return $this->created_at;         
     }
 
-    public function setDocName(string $doc_name): self
-    {
-        $this->doc_name = $doc_name;
-        return $this;
+    public function setCreatedAt(?DateTimeImmutable $created_at): self 
+    { 
+        $this->created_at = $created_at; 
+        return $this;         
     }
 
-    public function getFilename(): string
-    {
-        return $this->filename;
+    public function getUpdatedAt(): ?DateTimeImmutable 
+    { 
+        return $this->updated_at;         
     }
 
-    public function setFilename(string $filename): self
-    {
-        $this->filename = $filename;
-        return $this;
+    public function setUpdatedAt(?DateTimeImmutable $updated_at): self 
+    { 
+        $this->updated_at = $updated_at; 
+        return $this;         
     }
 
-    public function getFileType(): ?string
-    {
-        return $this->file_type;
-    }
-
-    public function setFileType(?string $file_type): self
-    {
-        $this->file_type = $file_type;
-        return $this;
-    }
-
-    public function getSizeBytes(): ?int
-    {
-        return $this->size_bytes;
-    }
-
-    public function setSizeBytes(?int $size_bytes): self
-    {
-        $this->size_bytes = $size_bytes;
-        return $this;
-    }
-
-    public function getFilePath(): ?string
-    {
-        return $this->file_path;
-    }
-
-    public function setFilePath(?string $file_path): self
-    {
-        $this->file_path = $file_path;
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
-        return $this;
-    }
-
-    public function getOpportunity(): ?Opportunity
-    {
-        return $this->opportunity;
-    }
-
-    public function setOpportunity(?Opportunity $opportunity): self
-    {
-        $this->opportunity = $opportunity;
-        return $this;
-    }
-
-    public function getCreatedAt(): ?DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(?DateTimeImmutable $created_at): self
-    {
-        $this->created_at = $created_at;
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?DateTimeImmutable
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(?DateTimeImmutable $updated_at): self
-    {
-        $this->updated_at = $updated_at;
-        return $this;
-    }
-
-    // Lifecycle Callbacks para updated_at y created_at
+    // Lifecycle Callbacks para timestamps
     #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
+    public function setTimestampsOnPersist(): void
     {
         if ($this->created_at === null) {
             $this->created_at = new DateTimeImmutable();
         }
         if ($this->updated_at === null) {
             $this->updated_at = new DateTimeImmutable();
+        }
+        if ($this->uploaded_at === null) { 
+            $this->uploaded_at = new \DateTime();
         }
     }
 

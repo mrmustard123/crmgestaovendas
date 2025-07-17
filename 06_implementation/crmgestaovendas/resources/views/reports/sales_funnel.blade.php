@@ -7,6 +7,21 @@ Created on: 11 jul. de 2025 23:46:18
 Email: leonardo616@gmail.com
 */
 
+    /*
+    //ATENCIÓN! DESACTIVAR APP_DEBUG EN .ENV AL SUBIR A PRODUCCION!
+    if (config('app.debug')) {
+        xdebug_break();
+    }
+    //SOLO PARA DEBUG:
+    
+    $test1 = $conversionRatesWon;
+    $test2 = $conversionRatesLost;
+    echo $test1.'<br/>';
+    echo $test2.'<br/>';
+    */
+
+
+
 ?>
 
 
@@ -27,6 +42,8 @@ Email: leonardo616@gmail.com
                             <span id="start_date_display" class="ml-2 text-gray-700 font-medium">
                                 @if(old('start_date'))
                                     {{ \Carbon\Carbon::parse(old('start_date'))->format('d/m/Y') }}
+                                @else
+                                    {{ $startDate }}
                                 @endif
                             </span>                    
                     <input type="date" id="start_date_picker" name="start_date" 
@@ -38,6 +55,8 @@ Email: leonardo616@gmail.com
                             <span id="end_date_display" class="ml-2 text-gray-700 font-medium">
                                 @if(old('end_date'))
                                     {{ \Carbon\Carbon::parse(old('end_date'))->format('d/m/Y') }}
+                                @else
+                                    {{ $endDate }}                                    
                                 @endif
                             </span>                    
                     <input type="date" id="end_date_picker" name="end_date" 
@@ -49,26 +68,29 @@ Email: leonardo616@gmail.com
                 Gerar Relatório
             </button>
         </form>
-
-        @if(isset($conversionRates))
             <div class="mt-8">
+        @if(isset($conversionRatesWon))            
                 <h4 class="text-md font-semibold text-gray-800 mb-4">Taxas de Conversão (Oportunidades Ganhas)</h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    @foreach($conversionRates as $stageName => $rate)
-                        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow">
+                    @foreach($conversionRatesWon as $stageName => $rate)
+                        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow">                            
                             <p class="font-bold">{{ $stageName }}</p>
-                            <p class="text-2xl mt-2">{{ number_format($rate, 2) }}%</p>
                             <p class="text-sm">Taxa de conversão</p>
+                            <p class="text-2xl mt-2">{{ number_format($rate, 2) }}%</p>
+                            
                         </div>
                     @endforeach
                 </div>
+        @endif     
+        @if(isset($conversionRatesLost))
                 <h4 class="text-md font-semibold text-gray-800 mb-4">Taxas de Perda (Oportunidades Perdidas)</h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    @foreach($conversionRates as $stageName => $rate)
-                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow">
+                    @foreach($conversionRatesLost as $stageName => $rate)
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow">                            
                             <p class="font-bold">{{ $stageName }}</p>
-                            <p class="text-2xl mt-2">{{ number_format($rate, 2) }}%</p>
                             <p class="text-sm">Taxa de conversão</p>
+                            <p class="text-2xl mt-2">{{ number_format($rate, 2) }}%</p>
+                            
                         </div>
                     @endforeach
                 </div>                

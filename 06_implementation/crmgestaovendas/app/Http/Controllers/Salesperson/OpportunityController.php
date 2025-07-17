@@ -171,7 +171,7 @@ Documentos: Este botón sirve para hacer el upload de documentos relacionados a 
 
         // 2. Actualizar OpportunityStatus (asumiendo que tienes un repositorio)
         $wonStatus = $this->entityManager->getRepository(OpportunityStatus::class)
-                        ->findOneBy(['status' => 'Won']);
+                        ->findOneBy(['status' => 'Ganho']);
 
         if ($wonStatus) {
             $opportunity = $stageHistory->getOpportunity();

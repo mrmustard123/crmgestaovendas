@@ -6,7 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
 use DateTime;
 use App\Models\Doctrine\Stage;
-
+use Doctrine\Common\Collections\ArrayCollection; // ¡NUEVO! Importar para colecciones
+use Doctrine\Common\Collections\Collection;     // ¡NUEVO! Importar la interfaz de colección
+use Doctrine\ORM\EntityManagerInterface;
 
 
 #[ORM\Entity]
@@ -48,7 +50,7 @@ class Opportunity
     // Relación ManyToOne con LeadOrigin
     #[ORM\ManyToOne(targetEntity: LeadOrigin::class)]
     #[ORM\JoinColumn(name: "lead_origin_id", referencedColumnName: "lead_origin_id", nullable: true, onDelete: "SET NULL")]
-    private ?LeadOrigin $leadOrigin = null;
+    private ?LeadOrigin $lead_origin_id = null;
 
     // `priority` enum('Low','Medium','High','Critical') NOT NULL DEFAULT 'Low'
     #[ORM\Column(type: "string", length: 10, options: ["default" => "Low"])] // Longitud suficiente para el ENUM más largo
@@ -58,7 +60,7 @@ class Opportunity
     // Relación ManyToOne con OpportunityStatus
     #[ORM\ManyToOne(targetEntity: OpportunityStatus::class)]
     #[ORM\JoinColumn(name: "fk_op_status_id", referencedColumnName: "opportunity_status_id", nullable: true, onDelete: "SET NULL")]
-    private ?OpportunityStatus $opportunityStatus = null;  
+    private ?OpportunityStatus $fk_op_status_id = null;  
      
 
     // `fk_vendor` int unsigned DEFAULT NULL
@@ -81,6 +83,16 @@ class Opportunity
     #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
     private ?DateTimeImmutable $updated_at = null;
     
+    // Relación con Actividades: una Oportunidad tiene muchas Actividades
+    // 'opportunity' es el nombre de la propiedad en la entidad Activity que mapea de vuelta a Opportunity
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: "opportunity", cascade: ["persist", "remove"], orphanRemoval: true)]
+    private Collection $activities;
+
+    // Relación con Documentos: una Oportunidad tiene muchos Documentos
+    // 'opportunity' es el nombre de la propiedad en la entidad Document que mapea de vuelta a Opportunity
+    #[ORM\OneToMany(targetEntity: Document::class, mappedBy: "opportunity", cascade: ["persist", "remove"], orphanRemoval: true)]
+    private Collection $documents;    
+    
 
     // --- Constructor (Opcional) ---
     public function __construct()
@@ -89,6 +101,8 @@ class Opportunity
         // $this->estimated_sale = 0.00; // Ya definido en la propiedad
         // $this->priority = 'Low'; // Ya definido en la propiedad
         $this->setDefaultStage(); //por default fk_stage=1
+        $this->activities = new ArrayCollection(); // Inicializar la colección
+        $this->documents = new ArrayCollection();   // Inicializar la colección        
         
     }
     
@@ -182,12 +196,12 @@ class Opportunity
 
     public function getLeadOrigin(): ?LeadOrigin
     {
-        return $this->leadOrigin;
+        return $this->lead_origin_id;
     }
 
     public function setLeadOrigin(?LeadOrigin $leadOrigin): self
     {
-        $this->leadOrigin = $leadOrigin;
+        $this->lead_origin_id = $leadOrigin;
         return $this;
     }
 
@@ -208,12 +222,12 @@ class Opportunity
 
     public function getOpportunityStatus(): ?OpportunityStatus
     {
-        return $this->opportunityStatus;
+        return $this->fk_op_status_id;
     }       
 
     public function setOpportunityStatus(?OpportunityStatus $opportunityStatus): self
     {
-        $this->opportunityStatus = $opportunityStatus;
+        $this->fk_op_status_id = $opportunityStatus;
         return $this;
     }
     
@@ -268,6 +282,65 @@ class Opportunity
         $this->updated_at = $updated_at;
         return $this;
     }
+    
+   /**
+     * @return Collection<int, Activity>
+     */
+    public function getActivities(): Collection
+    {
+        return $this->activities;
+    }
+
+    public function addActivity(Activity $activity): self
+    {
+        if (!$this->activities->contains($activity)) {
+            $this->activities[] = $activity;
+            $activity->setOpportunity($this);
+        }
+        return $this;
+    }
+
+    public function removeActivity(Activity $activity): self
+    {
+        if ($this->activities->removeElement($activity)) {
+            // set the owning side to null (unless already changed)
+            if ($activity->getOpportunity() === $this) {
+                $activity->setOpportunity(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Document>
+     */
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function addDocument(Document $document): self
+    {
+        if (!$this->documents->contains($document)) {
+            $this->documents[] = $document;
+            $document->setOpportunity($this);
+        }
+        return $this;
+    }
+
+    public function removeDocument(Document $document): self
+    {
+        if ($this->documents->removeElement($document)) {
+            // set the owning side to null (unless already changed)
+            if ($document->getOpportunity() === $this) {
+                $document->setOpportunity(null);
+            }
+        }
+        return $this;
+    }    
+    
+    
+    
 
     // Lifecycle Callbacks para updated_at y created_at
     #[ORM\PrePersist]

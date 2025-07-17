@@ -225,6 +225,7 @@ class LeadController extends Controller
             $opportunity->setDescription($request->input('description'));
             $opportunity->setEstimatedSale($request->input('estimated_sale'));
             $opportunity->setCurrency($request->input('currency'));
+            $opportunity->setOpenDate(now());
             $opportunity->setExpectedClosingDate($request->input('expected_closing_date') ? new DateTime($request->input('expected_closing_date')) : null);
             $opportunity->setOpportunityStatus($opportunityStatusOpened); // Estado inicial 'Aberto'
             $opportunity->setPerson($person); // Vincular a la Persona
@@ -273,7 +274,7 @@ class LeadController extends Controller
                         $this->entityManager->persist($prodServOpp);
                     } else {
                         // Opcional: Loguear si un ID enviado no existe, aunque la validación previa debería prevenir esto
-                        Log::warning("ProductService con ID {$productServiceId} no encontrado al crear ProdServOpp para la Oportunidad {$opportunity->getOpportunityId()}");
+                        Log::warning("ProductService con ID {$productServiceId} não encontrado ao criar ProdServOpp para a Oportunidade {$opportunity->getOpportunityId()}");
                     }
                 }
             }
