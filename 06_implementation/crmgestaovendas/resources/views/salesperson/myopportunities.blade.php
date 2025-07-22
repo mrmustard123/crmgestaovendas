@@ -223,6 +223,11 @@
     .lost-button, .won-button {
         pointer-events: auto; /* Pero habilita en los botones */
     }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }    
 </style>
 @endpush
 
@@ -238,7 +243,7 @@
             ];
         @endphp
 
-        <div class="table-container">
+        <div class="table-container"  style="position: relative;">
             <table class="kanban-table">
                 <thead>
                     <tr>
@@ -311,6 +316,29 @@
                     @endforeach
                 </tbody>
             </table>
+            <div id="loading-indicator" style="
+                display: none;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 100;
+                background-color: rgba(255, 255, 255, 0.8);
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px #aaa;
+            ">
+                <div class="spinner" style="
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #3498db;
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    animation: spin 1s linear infinite;
+                    margin: auto;
+                "></div>
+            </div>
+            
         </div>
     </div>
 @endsection
@@ -374,6 +402,9 @@
                 
                 if (!card) return;
                 
+                const loadingIndicator = document.getElementById('loading-indicator');
+                loadingIndicator.style.display = 'block'; // Mostrar loading                
+                
                 try {
                     const response = await fetch(`{{ url('/') }}/salesperson/opportunities/${opportunityId}/update-stage`, {
                         method: 'POST',
@@ -401,60 +432,13 @@
                 } catch (error) {
                     console.error('Error:', error);
                     alert('Erro ao atualizar a etapa: ' + error.message);
+                }finally {
+                    // Ocultar indicador de carga siempre
+                    loadingIndicator.style.display = 'none';
                 }
             });
         });
- /*       
-        // Manejo de los botones Ganho/Perdido
-        wonButtons.forEach(button => {
-            button.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const opportunityId = button.dataset.opportunityId;
-                
-                if (confirm('Tem certeza que deseja marcar esta oportunidade como GANHO?')) {
-                    await updateOpportunityStatus(opportunityId, 'won');
-                }
-            });
-        });
-        
-        lostButtons.forEach(button => {
-            button.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const opportunityId = button.dataset.opportunityId;
-                
-                if (confirm('Tem certeza que deseja marcar esta oportunidade como PERDIDO?')) {
-                    await updateOpportunityStatus(opportunityId, 'lost');
-                }
-            });
-        });
-*/
-/*        
-        async function updateOpportunityStatus(opportunityId, status) {
-            try {
-                const response = await fetch(`{{ url('/') }}/salesperson/opportunities/${opportunityId}/update-status`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ status: status })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(await response.text());
-                }
-                
-                const data = await response.json();
-                console.log('Status atualizado:', data);
-                window.location.reload();
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Erro ao atualizar o status: ' + error.message);
-            }
-        }
- */       
+ 
         
         /********* Manejo de los botones Ganho/Perdido*************/
         

@@ -19,14 +19,11 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
         
-        
-        //$this->call(PersonRoleSeeder::class);
-        // También puedes llamar a otros seeders aquí si tienes más
-        // $this->call(AnotherSeeder::class);     
-        
-        //$this->call(LeadOriginSeeder::class);
-        //$this->call(OpportunityStatusSeeder::class);
-        //$this->call(UsersGroupSeeder::class);
+        $this->call(UsersGroupSeeder::class);
+        $this->call(UserSeeder::class);
+        $this->call(PersonRoleSeeder::class);  
+        $this->call(LeadOriginSeeder::class);
+        $this->call(OpportunityStatusSeeder::class);
         $this->call(StageSeeder::class);
         
         

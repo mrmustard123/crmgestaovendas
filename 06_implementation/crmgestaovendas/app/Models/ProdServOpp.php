@@ -16,19 +16,9 @@ class ProdServOpp extends Model
      */
     protected $table = 'prod_serv_opp';
 
-    // Deshabilita el auto-incremento para la clave primaria, ya que es compuesta
+
     public $incrementing = false;
 
-    // Si tu clave primaria compuesta no es numérica y no usas un "id" como nombre,
-    // puedes omitir $primaryKey o establecerlo en null.
-    // En este caso, como tus claves son numéricas, Eloquent intentará usar 'id' por defecto
-    // si no lo especificas. Lo mejor es no definir $primaryKey para claves compuestas
-    // o darle un valor nulo, ya que no representa una única columna.
-    // protected $primaryKey = null; // No es necesario si no usas los métodos find() directamente con esta PK
-
-    // Indica que no hay timestamps automáticos si no los gestiona Eloquent.
-    // En tu caso, sí tienes created_at y updated_at, así que déjalo como está por defecto (true)
-    // o explícitamente a true si no están en el nombre estándar.
     public $timestamps = true;
 
 

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
+namespace App\Models\Doctrine; 
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable; // Para los campos de fecha y hora
 use DateTime;
 use App\Models\Doctrine\Stage;
+use App\Models\Doctrine\ProdServOpp;
 use Doctrine\Common\Collections\ArrayCollection; // ¡NUEVO! Importar para colecciones
 use Doctrine\Common\Collections\Collection;     // ¡NUEVO! Importar la interfaz de colección
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,6 +34,9 @@ class Opportunity
     // `estimated_sale` decimal(12,2) NOT NULL DEFAULT '0.00'
     #[ORM\Column(type: "decimal", precision: 12, scale: 2, options: ["default" => "0.00"])]
     private float $estimated_sale = 0.00;
+    
+    #[ORM\Column(type: "decimal", precision: 12, scale: 2, options: ["default" => "0.00"])]
+    private float $final_price = 0.00; 
 
     // `expected_closing_date` date DEFAULT NULL
     #[ORM\Column(type: "date", nullable: true)]
@@ -83,6 +87,7 @@ class Opportunity
     #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
     private ?DateTimeImmutable $updated_at = null;
     
+// --- NUEVAS RELACIONES OneToMany ---    
     // Relación con Actividades: una Oportunidad tiene muchas Actividades
     // 'opportunity' es el nombre de la propiedad en la entidad Activity que mapea de vuelta a Opportunity
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: "opportunity", cascade: ["persist", "remove"], orphanRemoval: true)]
@@ -91,7 +96,11 @@ class Opportunity
     // Relación con Documentos: una Oportunidad tiene muchos Documentos
     // 'opportunity' es el nombre de la propiedad en la entidad Document que mapea de vuelta a Opportunity
     #[ORM\OneToMany(targetEntity: Document::class, mappedBy: "opportunity", cascade: ["persist", "remove"], orphanRemoval: true)]
-    private Collection $documents;    
+    private Collection $documents;  
+
+    #[ORM\OneToMany(targetEntity: ProdServOpp::class, mappedBy: "opportunity", cascade: ["persist", "remove"], orphanRemoval: true)]
+    private Collection $prodServOpps; // Nombre de la propiedad en plural y significativo
+    
     
 
     // --- Constructor (Opcional) ---
@@ -100,24 +109,13 @@ class Opportunity
         // Puedes inicializar valores por defecto aquí si no los defines en la propiedad
         // $this->estimated_sale = 0.00; // Ya definido en la propiedad
         // $this->priority = 'Low'; // Ya definido en la propiedad
-        $this->setDefaultStage(); //por default fk_stage=1
+        
         $this->activities = new ArrayCollection(); // Inicializar la colección
-        $this->documents = new ArrayCollection();   // Inicializar la colección        
+        $this->documents = new ArrayCollection();   // Inicializar la colección  
+        $this->prodServOpps = new ArrayCollection();
         
     }
-    
-    
-    private function setDefaultStage(): void
-    {
-        $stageRepository = $this->entityManager->getRepository(Stage::class);
-        $firstStage = $stageRepository->findOneBy([], ['stage_id' => 'ASC']);
-
-        if ($firstStage) {
-            $this->opportunityStage = $firstStage;
-        }
-    }    
-
-    
+        
     
     
     // --- Getters y Setters ---
@@ -160,6 +158,17 @@ class Opportunity
         $this->estimated_sale = $estimated_sale;
         return $this;
     }
+    
+    public function getFinalPrice(): float
+    {
+        return $this->final_price;
+    }
+
+    public function setFinalPrice(float $final_price): self
+    {
+        $this->final_price = $final_price;
+        return $this;
+    }    
 
     public function getExpectedClosingDate(): ?\DateTime
     {
@@ -283,6 +292,7 @@ class Opportunity
         return $this;
     }
     
+  // --- NUEVOS Getters y Métodos para las colecciones ---        
    /**
      * @return Collection<int, Activity>
      */
@@ -338,7 +348,36 @@ class Opportunity
         }
         return $this;
     }    
-    
+
+
+
+    /**
+     * @return Collection<int, ProdServOpp>
+     */
+    public function getProdServOpps(): Collection
+    {
+        return $this->prodServOpps;
+    }
+
+    public function addProdServOpp(ProdServOpp $prodServOpp): self
+    {
+        if (!$this->prodServOpps->contains($prodServOpp)) {
+            $this->prodServOpps[] = $prodServOpp;
+            $prodServOpp->setOpportunity($this);
+        }
+        return $this;
+    }
+
+    public function removeProdServOpp(ProdServOpp $prodServOpp): self
+    {
+        if ($this->prodServOpps->removeElement($prodServOpp)) {
+            // set the owning side to null (unless already changed)
+            if ($prodServOpp->getOpportunity() === $this) {
+                $prodServOpp->setOpportunity(null);
+            }
+        }
+        return $this;
+    }    
     
     
 

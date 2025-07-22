@@ -45,6 +45,11 @@ class Activity
     // `comments` text DEFAULT NULL
     #[ORM\Column(type: "text", nullable: true)]
     private ?string $comments = null;
+    
+    // `activity_type` enum('Call','Meeting','Email') NOT NULL DEFAULT 'Ligação'
+    // Mapeado como string. La validación de los valores se hace en la aplicación.
+    #[ORM\Column(type: "string", length: 10, options: ["default" => "Meeting"])] // Longitud suficiente para "Reunião"
+    private string $activity_type = 'Meeting';
 
     // `fk_opportunity` int unsigned DEFAULT NULL
     // Relación ManyToOne con Opportunity
@@ -160,6 +165,24 @@ class Activity
         $this->comments = $comments;
         return $this;
     }
+    
+    
+    // Getter y Setter para el nuevo campo activity_type
+    public function getActivityType(): string
+    {
+        return $this->activity_type;
+    }
+
+    public function setActivityType(string $activity_type): self
+    {
+        // Opcional: Validar que el activity_type sea uno de los valores permitidos
+        $allowedTypes = ['Call', 'Meeting', 'Email'];
+        if (!in_array($activity_type, $allowedTypes)) {
+            throw new \InvalidArgumentException("Tipo de atividade inválido: " . $activity_type);
+        }
+        $this->activity_type = $activity_type;
+        return $this;
+    }    
 
     public function getOpportunity(): ?Opportunity
     {

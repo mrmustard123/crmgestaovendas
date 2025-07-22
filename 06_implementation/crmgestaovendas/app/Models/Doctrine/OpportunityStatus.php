@@ -18,7 +18,7 @@ class OpportunityStatus
 
     // `status` varchar(15) NOT NULL DEFAULT 'Opened'
     #[ORM\Column(type: "string", length: 15, options: ["default" => "Opened"])]
-    private string $status = 'Opened';
+    private string $status = 'Aberto';
 
     // `created_at` timestamp NULL DEFAULT NULL
     #[ORM\Column(type: "datetime_immutable", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]

@@ -75,6 +75,22 @@ Email: leonardo616@gmail.com
                                 Ver Relatório de Forecast
                             </a>  
                             </li>
+                            </li>
+                            <li>
+                                <a href="{{ route('reports.vendor_performance') }}" class="block py-2 px-4 rounded hover:bg-gray-700">
+                                    Ver Relatório de Desempenho por Vendedor
+                                </a>  
+                            </li>   
+                            <li>
+                                <a href="{{ route('reports.activity_report') }}" class="block py-2 px-4 rounded hover:bg-gray-700">
+                                    Ver Relatório de Atividades
+                                </a>  
+                            </li>  
+                            <li>
+                                <a href="{{ route('reports.lead_origin_analysis') }}" class="block py-2 px-4 rounded hover:bg-gray-700">
+                                    Ver Relatório de Análise do Origens dos Leads
+                                </a>  
+                            </li>                              
                         @endif
 
                         {{-- Menú para Vendedores (ejemplo) --}}

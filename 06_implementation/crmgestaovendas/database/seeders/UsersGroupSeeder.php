@@ -14,8 +14,15 @@ class UsersGroupSeeder extends Seeder
      */
     public function run(): void
     {
-        UsersGroup::create(['group_name' => 'Administradores']);
-        UsersGroup::create(['group_name' => 'Gerentes']);
-        UsersGroup::create(['group_name' => 'Vendedores']);      
+       // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);        
+        
+        
+        UsersGroup::create(['user_group_id' => '1', 'group_name' => 'Administradores']);
+        UsersGroup::create(['user_group_id' => '2', 'group_name' => 'Gerentes']);
+        UsersGroup::create(['user_group_id' => '3', 'group_name' => 'Vendedores']);  
+        UsersGroup::create(['user_group_id' => '4', 'group_name' => 'Restrito']);
     }
 }

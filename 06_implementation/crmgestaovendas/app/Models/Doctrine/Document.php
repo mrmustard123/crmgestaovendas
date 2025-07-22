@@ -104,11 +104,11 @@ class Document
         return $this;         
     }
     
-    public function getUploadedAt(): ?DateTimeImmutable 
+    public function getUploadedAt(): ?\DateTime
     { 
         return $this->uploaded_at;         
     }
-    public function setUploadedAt(?DateTimeImmutable $uploaded_at): self 
+    public function setUploadedAt(?\DateTime $uploaded_at): self 
     { 
         $this->uploaded_at = $uploaded_at; 
         return $this;         

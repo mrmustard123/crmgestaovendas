@@ -340,7 +340,7 @@ Email: leonardo616@gmail.com
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     
                 
-                    {{-- NUEVA SECCIÓN PARA PRODUCTOS/SERVICIOS --}}
+                    {{-- SECCIÓN PARA PRODUCTOS/SERVICIOS --}}
                     <div class="mb-4">
                         <label for="product_service_search" class="block text-gray-700 text-sm font-bold mb-2">Buscar Produtos/Serviços:</label>
                         <div id="selected_products_container" class="mt-2 flex flex-wrap gap-2">Prod/serv:
@@ -564,79 +564,167 @@ Email: leonardo616@gmail.com
              expectedClosingDateDisplay.textContent = formatDateForDisplay(expectedClosingDatePicker.value);
         }
         
-        // =============================================================
-        // SECCION PARA MANEJAR FORMATO DE SEPARADOR DECIMAL
+// =============================================================
+        // SECCION PARA MANEJAR FORMATO DE SEPARADOR DECIMAL BRASILERO
         // =============================================================        
-        
-        
-        const estimated_sale = document.getElementById('estimated_sale');
-        console.log("javascript funcionando");
-        // Función para formatear el número para la visualización (añadir coma y punto de miles)
-        // No usaremos esto directamente para la entrada, pero es útil para cuando se cargue un valor.
+
+        const estimatedSale = document.getElementById('estimated_sale');
+
+        // Función para formatear el número para visualización (coma decimal y puntos de miles)
         function formatNumberForDisplay(value) {
+            if (value === null || value === undefined || value === '' || value === 0) {
+                return '';
+            }
+
+            // Convertir a string si no lo es
+            let stringValue = String(value);
+
+            // Si ya contiene formato brasilero (coma decimal), parsearlo primero
+            if (stringValue.includes(',')) {
+                // Remover puntos de miles y convertir coma decimal a punto
+                let cleanValue = stringValue.replace(/\./g, '').replace(',', '.');
+                value = parseFloat(cleanValue);
+            } else {
+                value = parseFloat(stringValue);
+            }
+
+            if (isNaN(value)) {
+                return '';
+            }
+
+            // Formatear con separadores brasileros (punto para miles, coma para decimales)
+            return value.toLocaleString('pt-BR', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            });
+        }
+
+        // Función para limpiar y transformar la entrada a formato numérico estándar (para el backend)
+        function cleanAndFormatForBackend(value) {
             if (value === null || value === undefined || value === '') {
                 return '';
             }
-            // Asegurarse de que es un número
-            const num = parseFloat(value);
-            if (isNaN(num)) {
-                return '';
+
+            let stringValue = String(value);
+
+            // Si ya es un número válido sin formato (ej: "1234.56"), devolverlo
+            if (!stringValue.includes(',') && !stringValue.includes('.')) {
+                return stringValue;
             }
-            return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Si contiene formato brasilero, convertir a formato estándar
+            if (stringValue.includes(',')) {
+                // Remover puntos de miles y convertir coma decimal a punto
+                let cleanValue = stringValue.replace(/\./g, '').replace(',', '.');
+                const num = parseFloat(cleanValue);
+                return isNaN(num) ? '' : String(num);
+            }
+
+            // Si solo contiene puntos, asumir que el último es decimal si hay más de uno
+            const dotCount = (stringValue.match(/\./g) || []).length;
+            if (dotCount > 1) {
+                // Múltiples puntos: tratar todos menos el último como separadores de miles
+                const lastDotIndex = stringValue.lastIndexOf('.');
+                const integerPart = stringValue.substring(0, lastDotIndex).replace(/\./g, '');
+                const decimalPart = stringValue.substring(lastDotIndex + 1);
+                const num = parseFloat(integerPart + '.' + decimalPart);
+                return isNaN(num) ? '' : String(num);
+            }
+
+            // Un solo punto o sin puntos: asumir formato estándar
+            const num = parseFloat(stringValue);
+            return isNaN(num) ? '' : String(num);
         }
 
-        // Función para limpiar y transformar la entrada del usuario a un formato numérico con punto decimal
-        function cleanAndFormatNumberForBackend(value) {
-            if (value === null || value === undefined || value === '') {
-                return '';
-            }
-            // 1. Eliminar puntos de miles
-            let cleanedValue = String(value).replace(/\./g, '');
-            // 2. Reemplazar coma decimal por punto decimal
-            cleanedValue = cleanedValue.replace(/,/g, '.');
-            // 3. Convertir a float
-            return parseFloat(cleanedValue);
-        }
-
-        // Event listener para formatear mientras el usuario escribe o al salir del campo
-        function applyCurrencyMask(event) {
+        // Event listener para permitir solo caracteres válidos mientras se escribe
+        function handleInput(event) {
             let value = event.target.value;
+            let cursorPosition = event.target.selectionStart;
 
-            // Permite solo dígitos, comas y puntos
-            value = value.replace(/[^0-9,\.]/g, '');
+            // Remover caracteres no válidos (solo permitir números, coma y punto)
+            let cleanValue = value.replace(/[^\d.,]/g, '');
 
-            // Si ya hay una coma, evita otra
-            if (value.indexOf(',') !== -1) {
-                const parts = value.split(',');
-                value = parts[0] + ',' + parts[1].slice(0, 2); // Limita a 2 decimales después de la coma
+            // Permitir solo una coma decimal
+            const commaCount = (cleanValue.match(/,/g) || []).length;
+            if (commaCount > 1) {
+                const firstCommaIndex = cleanValue.indexOf(',');
+                cleanValue = cleanValue.substring(0, firstCommaIndex + 1) + 
+                            cleanValue.substring(firstCommaIndex + 1).replace(/,/g, '');
             }
 
-            // Para la visualización, no necesitamos formatear en tiempo real con miles si el usuario está escribiendo.
-            // Simplemente asegúrate de que solo haya una coma decimal y 2 decimales.
-            event.target.value = value;
-        }
+            // Limitar decimales a 2 dígitos después de la coma
+            if (cleanValue.includes(',')) {
+                const parts = cleanValue.split(',');
+                if (parts[1] && parts[1].length > 2) {
+                    cleanValue = parts[0] + ',' + parts[1].substring(0, 2);
+                }
+            }
 
-        // Aplicar los listeners
-        if (estimated_sale) {
-            estimated_sale.addEventListener('input', applyCurrencyMask);
-            // Cuando se carga la página o hay un valor old, formatearlo para la vista
-            if (estimated_sale.value) {
-                // old('price') ya viene en formato de punto decimal (del backend)
-                // lo formateamos para que se vea con coma decimal al cargar la página
-                estimated_sale.value = formatNumberForDisplay(estimated_sale.value);
+            // Solo actualizar si el valor cambió
+            if (value !== cleanValue) {
+                event.target.value = cleanValue;
+                // Mantener la posición del cursor
+                event.target.setSelectionRange(cursorPosition, cursorPosition);
             }
         }
 
+        // Event listener para formatear al salir del campo
+        function handleBlur(event) {
+            const value = event.target.value;
+            if (value) {
+                // Convertir a número y formatear
+                const cleanValue = cleanAndFormatForBackend(value);
+                const formattedValue = formatNumberForDisplay(cleanValue);
+                event.target.value = formattedValue;
+            }
+        }
 
-        // Manejar el envío del formulario: transformar los valores a formato de punto antes de enviar
+        // Event listener para limpiar el formato al enfocar (opcional - para mejor UX)
+        function handleFocus(event) {
+            const value = event.target.value;
+            if (value) {
+                // Mostrar el valor sin formato de miles para facilitar la edición
+                const cleanValue = cleanAndFormatForBackend(value);
+                const num = parseFloat(cleanValue);
+                if (!isNaN(num)) {
+                    // Mostrar con coma decimal pero sin puntos de miles
+                    event.target.value = num.toFixed(2).replace('.', ',');
+                }
+            }
+        }
+
+        // Aplicar los event listeners
+        if (estimatedSale) {
+            estimatedSale.addEventListener('input', handleInput);
+            estimatedSale.addEventListener('blur', handleBlur);
+            estimatedSale.addEventListener('focus', handleFocus);
+
+            // Formatear el valor inicial al cargar la página
+            if (estimatedSale.value) {
+                const initialFormatted = formatNumberForDisplay(estimatedSale.value);
+                estimatedSale.value = initialFormatted;
+            }
+        }
+
+        // Manejar el envío del formulario - convertir a formato estándar para el backend
         const form = document.querySelector('form');
-        form.addEventListener('submit', function() {
-            if (estimated_sale) {
-                // Reemplaza el valor del campo con el formato de punto para el backend
-                estimated_sale.value = cleanAndFormatNumberForBackend(estimated_sale.value);
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                if (estimatedSale && estimatedSale.value) {
+                    // Convertir el valor al formato estándar antes de enviar
+                    const standardValue = cleanAndFormatForBackend(estimatedSale.value);
+                    estimatedSale.value = standardValue;
+                }
+            });
+        }
+
+        // Restaurar formato después de errores de validación (si hay errores y la página se recarga)
+        document.addEventListener('DOMContentLoaded', function() {
+            if (estimatedSale && estimatedSale.value) {
+                const formattedValue = formatNumberForDisplay(estimatedSale.value);
+                estimatedSale.value = formattedValue;
             }
-        });        
-        
+        });       
         
         // =============================================================
         // SECCION PARA OBTENER SUGERENCIAS DE LEADS YA REGISTRADOS

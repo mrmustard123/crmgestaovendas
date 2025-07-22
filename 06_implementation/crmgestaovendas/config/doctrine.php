@@ -1,6 +1,64 @@
 <?php
 
 return [
+    
+    /*
+     |------------------------------------------------------------------------- 
+     | DOCTRINE MIGRATIONS
+     |-------------------------------------------------------------------------
+     */
+//    'migrations' => [
+//        'table_name' => 'doctrine_migrations',
+//        'migrations_paths' => [
+//            'Database\\DoctrineMigrations' => database_path('migrations/doctrine'),
+//        ],
+//        'enable_migrations' => true,
+//        'all_or_nothing' => true,
+//        'check_database_platform' => true,
+//        // Configuraciones específicas para Laravel Doctrine 3.x
+//        'custom_template' => null,
+//        'organize_migrations' => false,
+//        'connection' => null,
+//        'em' => 'default', // Especifica el entity manager
+//    ],
+    /*
+    |--------------------------------------------------------------------------
+    | Doctrine DBAL
+    |--------------------------------------------------------------------------
+    */
+    'dbal' => [
+        // Aquí van tus conexiones de base de datos si las tienes definidas aquí
+        // Por ejemplo:
+        'connections' => [
+            'mysql' => [
+                'driver'   => 'pdo_mysql',
+                'host'     => env('DB_HOST'),
+                'port'     => env('DB_PORT', 3306),
+                'database' => env('DB_DATABASE'),
+                'username' => env('DB_USERNAME'),
+                'password' => env('DB_PASSWORD'),
+                'charset'  => env('DB_CHARSET', 'utf8mb4'),
+            ],
+            // ... otras conexiones
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Custom DBAL Types
+        |--------------------------------------------------------------------------
+        |
+        | IMPORTANTE: Esta sección debe estar vacía si defines los tipos en custom_types
+        | porque se registran automáticamente desde ahí.
+        |
+        */
+        'types' => [
+            // Comentar o remover esta línea:
+            // 'my_enum' => \App\Models\Doctrine\Types\EnumType::class,
+        ],
+    ],    
+    
+    
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -80,7 +138,8 @@ return [
             |--------------------------------------------------------------------------
             */
             'mapping_types' => [
-                //'enum' => 'string'
+                'enum' => 'my_enum',
+                //'enum' => 'string',  //<-- asi también puede funcionar teoricamente
             ],
 
             /**
@@ -120,9 +179,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | Create a custom or override a Doctrine Type
+    | AQUÍ es donde debes definir tu tipo personalizado
     |--------------------------------------------------------------------------
     */
     'custom_types'               => [
+        'my_enum' => \App\Models\Doctrine\Types\EnumType::class,
     ],
     /*
     |--------------------------------------------------------------------------

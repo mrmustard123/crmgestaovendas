@@ -60,6 +60,19 @@
                     <p class="text-red-500 text-xs italic">{{ $message }}</p>
                 @enderror
             </div>
+            
+            
+            <div class="mb-4">
+                <label for="activity_type" class="block text-gray-700 text-sm font-bold mb-2">Tipo:</label>
+                <select name="activity_type" id="status" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('activity_type') border-red-500 @enderror" required>
+                    @foreach ($activityActivityTypes as $value => $label)
+                        <option value="{{ $value }}" {{ old('status') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('status')
+                    <p class="text-red-500 text-xs italic">{{ $message }}</p>
+                @enderror
+            </div>            
 
             <div class="mb-4">
                 <label for="result" class="block text-gray-700 text-sm font-bold mb-2">Resultado:</label>

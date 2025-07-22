@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Stage;
 
 class StageSeeder extends Seeder
 {
@@ -12,7 +13,7 @@ class StageSeeder extends Seeder
      */
     public function run(): void
     {        
-        Stage::truncate();
+        //Stage::truncate();
 
         $stages = [
             ['stage_id' => 1, 'stage_name' => 'Apresentação', 'description' => '', 'stage_order' => 0, 'active' => 1, 'color_hex' => '#03fca1'],

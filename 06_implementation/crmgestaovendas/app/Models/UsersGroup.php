@@ -17,6 +17,7 @@ class UsersGroup extends Model
     protected $table = 'users_group'; // <-- ¡Añade esta línea!
     protected $primaryKey = 'users_group_id';
     protected $fillable = [
+        'user_group_id',
         'group_name',
     ];     
     

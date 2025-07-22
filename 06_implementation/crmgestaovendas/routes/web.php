@@ -13,6 +13,10 @@ use App\Http\Controllers\Salesperson\ActivityController;
 use App\Http\Controllers\Salesperson\DocumentController;
 use App\Http\Controllers\Reports\SalesFunnelController;
 use App\Http\Controllers\Reports\ForecastController;
+use App\Http\Controllers\Reports\VendorPerformanceController;
+use App\Http\Controllers\Reports\VendorEditController;
+use App\Http\Controllers\Reports\ActivityReportController;
+use App\Http\Controllers\Reports\LeadOriginAnalysisController;
 
 
 /*
@@ -91,5 +95,10 @@ Route::middleware(['auth'])->group(function () { // <-- Este 'auth' protege todo
     Route::prefix('reports')->name('reports.')->middleware(['reports-access'])->group(function () {    
         Route::get('/sales-funnel', [SalesFunnelController::class, 'index'])->name('sales-funnel');
         Route::get('/forecast', [ForecastController::class, 'index'])->name('forecast');
+        Route::get('/relatorio-vendedores', [VendorPerformanceController::class, 'index'])->name('vendor_performance');
+        Route::get('/vendedores/{vendorId}/editar', [VendorEditController::class, 'edit'])->name('vendors.edit');
+        Route::put('/vendedores/{vendorId}', [VendorEditController::class, 'update'])->name('vendors.update');   
+        Route::get('/relatorio-atividades', [ActivityReportController::class, 'index'])->name('activity_report');
+        Route::get('/analise-origem-leads', [LeadOriginAnalysisController::class, 'index'])->name('lead_origin_analysis');
     });
 });

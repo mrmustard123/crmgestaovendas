@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Directive extends Model
 {
     use HasFactory;
+//      The table associated with the model.
+//      @var string
+//     
+    protected $table = 'directive';
+    protected $primaryKey = 'directive_id';     
+    
 }

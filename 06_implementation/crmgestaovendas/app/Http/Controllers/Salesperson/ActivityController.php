@@ -36,11 +36,13 @@ class ActivityController extends Controller
         // Puedes pasar opciones para los select, si los tienes (ej. status, result)
         $activityStatuses = ['scheduled' => 'Agendado', 'performed' => 'Concluído', 'canceled' => 'Cancelado', 'resheduled' => 'Reagendado'];
         $activityResults = ['positive' => 'Positivo', 'negative' => 'Negativo', 'neutral' => 'Neutro', '' => 'Sem resultado']; // Añadir opción vacía para 'null'
-
+        $activityActivityTypes = ['Call' => 'Ligação', 'Meeting' => 'Reunião', 'Email' => 'Email'];
+        
         return view('salesperson.activities.create', [
             'opportunity' => $opportunity,
             'activityStatuses' => $activityStatuses,
             'activityResults' => $activityResults,
+            'activityActivityTypes' => $activityActivityTypes,
         ]);
     }
 
@@ -61,6 +63,7 @@ class ActivityController extends Controller
             'duration_min' => 'nullable|integer|min:1',
             'status' => 'required|in:scheduled,performed,canceled,resheduled',
             'result' => 'nullable|in:positive,negative,neutral',
+            'activity_type' => 'nullable|in:Call,Meeting,Email',
             'comments' => 'nullable|string',
         ]);
 
@@ -77,6 +80,7 @@ class ActivityController extends Controller
         $activity->setDurationMin($validatedData['duration_min']); //
         $activity->setStatus($validatedData['status']); //
         $activity->setResult($validatedData['result']); //
+        $activity->setActivityType($validatedData['activity_type']);
         $activity->setComments($validatedData['comments']); //
         $activity->setOpportunity($opportunity); // Asocia la actividad a la oportunidad
 

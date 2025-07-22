@@ -15,6 +15,14 @@ class Stage extends Model
      * @var string
      */
     protected $table = 'stage';
-    protected $primaryKey = 'stage_id';       
+    protected $primaryKey = 'stage_id'; 
+    protected $fillable = [
+        'stage_id',
+        'stage_name',
+        'description',
+        'stage_order',
+        'active',
+        'color_hex',
+    ];     
     
 }

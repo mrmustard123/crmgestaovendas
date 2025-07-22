@@ -9,7 +9,7 @@ Email: leonardo616@gmail.com
 
 
 // En un script temporal o directamente en tu código
-echo password_hash('papanoel', PASSWORD_BCRYPT);
+echo password_hash('administrador', PASSWORD_BCRYPT);
 ?>
 
 

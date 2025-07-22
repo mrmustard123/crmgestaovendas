@@ -239,10 +239,18 @@ class LeadController extends Controller
             if (!$stageApresentacao) {
                 throw new \Exception("Stage 'Apresentação' (order 0) not found. Please ensure seeders are run.");
             }
+            
+            $stageRepository = $this->entityManager->getRepository(Stage::class);
+            $firstStage = $stageRepository->findOneBy([], ['stage_id' => 'ASC']);           
 
             $stageHistory = new StageHistory($opportunity, $stageApresentacao); // Constructor de StageHistory
             $stageHistory->setStageHistDate(new DateTime());
+            if ($firstStage) {
+                $stageHistory->setStage($firstStage);
+            } 
+            $stageHistory->setOpportunity($opportunity);                        
             $stageHistory->setComments("Oportunidade criada, estágio inicial 'Apresentação'.");
+            //$stageHistory->set
             // won_lost es null al inicio
             $this->entityManager->persist($stageHistory);
             $this->entityManager->flush(); // Flush para asegurar que StageHistory se guarde
