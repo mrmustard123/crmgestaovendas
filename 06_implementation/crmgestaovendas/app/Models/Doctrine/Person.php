@@ -1,5 +1,8 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Email: leonardo616@gmail.com
+*/
 namespace App\Models\Doctrine; // Ajusta el namespace según tu configuración
 
 use Doctrine\ORM\Mapping as ORM;
@@ -109,7 +112,7 @@ class Person
     // --- Constructor (Opcional) ---
     public function __construct()
     {
-        // Puedes inicializar valores por defecto aquí si no los defines en la propiedad
+        
         // $this->country = 'Brasil'; // Ya definido en la propiedad
     }
 

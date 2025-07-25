@@ -1,0 +1,12 @@
+PROBLEMA CON INICIO DE SESIÓN EN EL LOGIN
+------------------------------------------
+
+El problema ha surgido en el contexto de mi aplicación que usa comunicación por API con la UI.
+
+LECCIÓN APRENDIDA:
+El problema principal radicaba en que tu ruta de login (POST /api/login) estaba definida en routes/api.php. Las rutas en api.php no usan por defecto el middleware StartSession (que es el encargado de generar y enviar la cookie de sesión). Por lo tanto, aunque Auth::guard('web')->login($user); se ejecutaba en tu LoginController, Laravel no podía enviar la cookie de sesión al navegador porque el entorno de la solicitud API no lo permitía.
+La solución fue:
+    1. Mover tu ruta POST de login de routes/api.php a routes/web.php (por ejemplo, a /login-session). Esto aseguró que la solicitud de login se procesara con todos los middlewares web, incluyendo StartSession.
+    2. Actualizar el JavaScript en login.blade.php para que el fetch enviara la solicitud a la nueva ruta web ({{ url('/login-session') }}).
+    3. Asegurarnos de que los ajustes de la sesión (SESSION_DOMAIN=null y SESSION_SECURE_COOKIE=true) estuvieran correctos en .env y que la caché de Laravel (php artisan optimize:clear) se hubiera limpiado.
+

@@ -1,0 +1,6 @@
+SEEDERS A IMPLEMENTAR:
+
+-Seeder de grupos de usuarios
+-Seeder de estados del Brasil
+-Seeder de los "stage"
+-Seeder de Lead_Origin

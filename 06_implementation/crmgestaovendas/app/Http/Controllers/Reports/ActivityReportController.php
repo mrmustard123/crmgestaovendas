@@ -1,4 +1,9 @@
 <?php
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 
 namespace App\Http\Controllers\Reports;
 
@@ -47,7 +52,7 @@ class ActivityReportController extends Controller
         }
 
         // Definir os tipos de atividade esperados para garantir que todos apareçam no relatório
-        $expectedActivityTypes = ['Call', 'Meeting', 'Email'];
+        $expectedActivityTypes = ['Ligação', 'Reunião', 'Email'];
 
         // Inicializar os contadores para cada tipo de atividade com zero
         $activityCounts = array_fill_keys($expectedActivityTypes, 0);
@@ -63,14 +68,22 @@ class ActivityReportController extends Controller
                ->groupBy('a.activity_type');
 
             $results = $qb->getQuery()->getArrayResult();
+            
+            
 
             // Mesclar os resultados da consulta com os contadores inicializados
             foreach ($results as $result) {
                 $type = $result['activity_type'];
+                switch($type){
+                    case "Call": $type='Ligação'; break;
+                    case "Meeting": $type='Reunião'; break;
+                    case "Email": $type='Email'; break;                    
+                }
                 if (array_key_exists($type, $activityCounts)) {
                     $activityCounts[$type] = (int) $result['activityCount'];
                 }
             }
+            
         }
 
         // Preparar os dados para a exibição na tabela
@@ -80,6 +93,7 @@ class ActivityReportController extends Controller
                 'count' => $count,
             ];
         }
+        
 
         return view('reports.activity_report', compact('reportData', 'startDate', 'endDate'));
     }

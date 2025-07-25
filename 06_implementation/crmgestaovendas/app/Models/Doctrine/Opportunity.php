@@ -1,5 +1,8 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Email: leonardo616@gmail.com
+*/
 namespace App\Models\Doctrine; 
 
 use Doctrine\ORM\Mapping as ORM;

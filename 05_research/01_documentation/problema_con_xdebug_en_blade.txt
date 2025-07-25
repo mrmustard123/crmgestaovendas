@@ -1,0 +1,23 @@
+PROBLEMA CON XDEBUG EN BLADE
+----------------------------
+
+PROBLEMA: El problema es que colocaba un breakpoint en la UI blade (dashboard.blade.php) y no agarraba el breakpoint, siendo que en otras partes del proyecto Laravel funcionaba perfectamente como por ejemplo en route/web.php.
+
+SOLUCIÓN: Uso de xdebug_break() antes del breakpoint.
+Una práctica buena es:
+    if (config('app.debug')) {
+        
+	xdebug_break();
+    
+    }
+
+Así solo se activa en desarrollo (cuando APP_DEBUG=true) es decir en config/app.php que en realidad altera APP_DEBUG en .env
+
+IMPORTANTE: DESACTIVAR XDEBUG_BREAK EN PRODUCCIÓN! por que esto hará que se detenga la aplicación.
+
+¿POR QUE NO FUNCIONA XDEBUG EN BLADE?
+El problema que tienes es que XDebug no puede debuggear directamente archivos Blade (.blade.php) porque estos son plantillas que Laravel compila a PHP puro antes de ejecutarlas. Los breakpoints en archivos Blade no funcionan porque el código que realmente se ejecuta es el compilado, no el original.
+¿Por qué funciona en web.php pero no en Blade?
+    • web.php: Es código PHP puro que se ejecuta directamente 
+    • Archivos Blade: Son plantillas que Laravel compila y guarda en storage/framework/views/ como archivos PHP cachados
+

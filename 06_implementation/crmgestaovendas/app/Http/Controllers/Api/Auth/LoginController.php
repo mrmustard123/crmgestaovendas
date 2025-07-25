@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
@@ -39,7 +43,7 @@ class LoginController extends Controller
     
     // Verificación adicional (aunque si attempt fue OK, esto no debería ser null)
     if (!$user) {
-        return response()->json(['error' => 'User not found after token generation'], 500);
+        return response()->json(['error' => 'Usuário não encontrado após geração de token'], 500);
     }    
     
     // 2. Iniciar sesión al usuario en el guard 'web' (basado en sesiones)
@@ -107,9 +111,9 @@ class LoginController extends Controller
                 'redirect_to' => url('/dashboard')*/
             ]);
         } catch (TokenExpiredException $e) {
-            return response()->json(['error' => 'Token has expired and can no longer be refreshed'], 401);
+            return response()->json(['error' => 'O token expirou e não pode mais ser atualizado'], 401);
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not refresh token'], 500);
+            return response()->json(['error' => 'Não foi possível atualizar o token'], 500);
         }
     }
 
@@ -124,14 +128,14 @@ class LoginController extends Controller
             $user = JWTAuth::parseToken()->authenticate();
 
             if (!$user) {
-                return response()->json(['error' => 'User not found or token invalid'], 404);
+                return response()->json(['error' => 'Usuário não encontrado ou token inválido'], 404);
             }
 
             return response()->json($user);
         } catch (TokenExpiredException $e) {
-            return response()->json(['error' => 'Token has expired'], 401);
+            return response()->json(['error' => 'O token expirou'], 401);
         } catch (TokenInvalidException $e) {
-            return response()->json(['error' => 'Token is invalid'], 401);
+            return response()->json(['error' => 'O token é inválido'], 401);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Token not provided or other JWT error'], 401);
         }

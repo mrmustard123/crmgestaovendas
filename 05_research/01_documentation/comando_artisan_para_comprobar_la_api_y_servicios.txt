@@ -1,0 +1,4 @@
+Para comprobar la api con sus servicios:
+
+
+php artisan route:list

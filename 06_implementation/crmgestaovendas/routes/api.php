@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController; 

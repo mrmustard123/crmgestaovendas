@@ -123,7 +123,7 @@ class VendorController extends Controller
             // 5. Si todo ha ido bien, confirma la transacción
             $this->entityManager->commit();
 
-            return redirect()->route('admin.vendors.create')->with('success', 'Vendedor registrado com sucesso!');
+            return redirect()->route('admin.vendors.create')->with('success', 'Vendedor cadastrado com sucesso!');
 
         } catch (ValidationException $e) {
             // Si hay errores de validación, se revierte automáticamente si no se ha hecho un flush

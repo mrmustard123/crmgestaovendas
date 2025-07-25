@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 namespace App\Http\Controllers\Salesperson;
 
 use App\Http\Controllers\Controller;
@@ -89,8 +93,6 @@ class ActivityController extends Controller
 
         // Redirigir a algún lugar después de guardar, quizás a la página de detalles de la oportunidad
         // O de vuelta a la lista de oportunidades
-        return redirect()->route('salesperson.myopportunities')->with('success', 'Actividad registrada exitosamente.');
-        // O si tienes una vista de detalles de la oportunidad:
-        // return redirect()->route('salesperson.opportunities.show', ['id' => $opportunityId])->with('success', 'Actividad registrada exitosamente.');
+        return redirect()->route('salesperson.myopportunities')->with('success', 'Atividade registrada com sucesso.');
     }
 }

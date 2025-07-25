@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 namespace App\Http\Controllers\Salesperson;
 
 use App\Http\Controllers\Controller;
@@ -212,12 +216,12 @@ class LeadController extends Controller
 
             $currentAuthUser = Auth::user();
             if (!$currentAuthUser) {
-                throw new \Exception("No authenticated user found.");
+                throw new \Exception("Nenhum usuário autenticado encontrado.");
             }
 
             $vendor = $this->entityManager->getRepository(Vendor::class)->findOneBy(['user' => $currentAuthUser]);
             if (!$vendor) {
-                throw new \Exception("Authenticated user is not linked to a Vendor.");
+                throw new \Exception("O usuário autenticado não está vinculado a um vendedor.");
             }
 
             $opportunity = new Opportunity();

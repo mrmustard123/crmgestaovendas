@@ -1,10 +1,16 @@
+<?php
+/*
+Author: Leonardo G. Tellez Saucedo
+Email: leonardo616@gmail.com
+*/
+?>
 @extends('layouts.app')
 
-@section('page_title', 'Subir Documento para Oportunidad #' . $opportunity->getOpportunityId())
+@section('page_title', 'Upload Documento para Oportunidade #' . $opportunity->getOpportunityId())
 
 @section('content')
     <div class="container mx-auto px-4 py-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Subir Documento para Oportunidad: <span class="text-blue-600">{{ $opportunity->getOpportunityName() }}</span></h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Upload Documento para Oportunidade: <span class="text-blue-600">{{ $opportunity->getOpportunityName() }}</span></h2>
 
         {{-- Formulario para subir un nuevo documento --}}
         {{-- ¡Importante! 'enctype="multipart/form-data"' es crucial para que los archivos se envíen --}}
@@ -12,12 +18,12 @@
             @csrf
 
             <div class="mb-4">
-                <label for="document_file" class="block text-gray-700 text-sm font-bold mb-2">Seleccionar Archivo:</label>
+                <label for="document_file" class="block text-gray-700 text-sm font-bold mb-2">Selecionar Arquivo:</label>
                 <input type="file" name="document_file" id="document_file" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('document_file') border-red-500 @enderror" required>
                 @error('document_file')
                     <p class="text-red-500 text-xs italic">{{ $message }}</p>
                 @enderror
-                <p class="text-gray-600 text-xs mt-1">Formatos permitidos: PDF, Word (doc, docx), Imágenes (JPG, JPEG, PNG). Tamaño máximo: 5MB.</p>
+                <p class="text-gray-600 text-xs mt-1">Formatos permitidos: PDF, Word (doc, docx), Imagens (JPG, JPEG, PNG). Tamanho máximo: 5MB.</p>
             </div>
 
             <div class="mb-4">
@@ -30,7 +36,7 @@
 
             <div class="flex items-center justify-between">
                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Subir Documento
+                    Upload Documento
                 </button>
                 <a href="{{ route('salesperson.myopportunities') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
                     Cancelar

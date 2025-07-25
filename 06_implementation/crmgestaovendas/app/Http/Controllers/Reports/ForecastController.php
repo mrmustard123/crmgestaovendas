@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
@@ -32,7 +36,7 @@ class ForecastController extends Controller
             ->findOneBy(['status' => 'Aberto']);
             
         if (!$openStatus) {
-            abort(404, 'Estado "Aberto" no encontrado en la base de datos');
+            abort(404, 'Estado "Aberto" não encontrado no banco de dados');
         }
         
         // Sección 1: Pipeline Temporal

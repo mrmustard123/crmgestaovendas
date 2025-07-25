@@ -1,0 +1,23 @@
+RESPONSABILIDADES DE LOS USUARIOS DEL SISTEMA
+---------------------------------------------
+
+Administradores: 
+1.- Registrar a los vendedores 
+2.- Crear usuario y contraseña para el vendedor 
+3.- Asignar los usuarios a grupos de usuarios 
+4.- Asignar funcionalidades a grupos de usuarios 
+5.- Registrar los Productos-Servicios 
+También definiremos las responsabilidades para los Gerentes: 
+1.- Generar un reporte de tazas de conversión por etapa. 
+2.- Generar reporte de estimación de ventas (Forecast) 
+3.- Reporte de desempeño por vendedor 
+4.- Reporte de actividades y esfuerzo del equipo 
+5.- Reporte para análisis de origen de los Leads 
+Responsabilidades del Vendedor: 
+1.- Registrar al Lead, definir si es cliente físico o representante de una compañía. Si es representante de una compañía además de registrarlo como contacto, también registrar a la compañía vinculada a este contacto. 
+2.- Registrar los datos de la oportunidad 
+3.- Registrar las actividades de la oportunidad 
+4.- La oportunidad automáticamente se vincula a la etapa de orden 0, es responsabilidad del vendedor mover la oportunidad a una siguiente etapa y registrar si en esa etapa se cerró el negocio (won) o se lo perdió (lost) aparte de la fecha, comentarios, etc. 
+5.- Vincular una oportunidad con los productos o servicios que se venderan 
+Responsabilidades del sistema: 
+1.- Si el vendedor cierra un negocio exitosamente en una etapa dada y si el cliente es una persona física se cambia su 'role' a 'Client', pues siempre se crea como Lead en un principio, el cliente es una compañía, entonces el 'status' de la misma se cambia a 'active' y el 'role' de la persona se cambia a 'contact'. 

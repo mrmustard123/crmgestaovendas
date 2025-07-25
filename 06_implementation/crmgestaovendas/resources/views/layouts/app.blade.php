@@ -33,7 +33,7 @@ Email: leonardo616@gmail.com
                     {{-- Lógica para mostrar el menú basado en el grupo del usuario --}}
                     @auth('web')
                         @php
-                            // Obtenemos el usuario autenticado
+                            
                             $authenticatedUser = Auth::guard('web')->user();
                             $userGroupName = '';
 
@@ -99,20 +99,30 @@ Email: leonardo616@gmail.com
                                 <span class="block py-2 px-4 text-gray-400 font-semibold">Vendas</span>
                             </li>
                             <li>
-                                <a href="#" class="block py-2 px-4 rounded hover:bg-gray-700">Meus Leads</a>
+                                <a href="{{ route('salesperson.vendors.leads', ['role' => 'Lead']) }}" class="block py-2 px-4 rounded hover:bg-gray-700">Meus Leads</a>
                             </li>
+                            <li>
+                                <a href="{{ route('salesperson.vendors.leads', ['role' => 'Cliente']) }}" class="block py-2 px-4 rounded hover:bg-gray-700">Meus Clientes Individuais</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('salesperson.vendors.leads', ['role' => 'Contato']) }}" class="block py-2 px-4 rounded hover:bg-gray-700">Meus Contatos de Conta</a>
+                            </li>                            
                             <li>
                                 <a href="{{ url('/salesperson/leads/create') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Cadastrar Lead</a>
                             </li> 
                             <li>
                                 <a href="{{ url('/salesperson/myopportunities') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Minhas oportunidades (Em Aberto)</a>
-                            </li>                             
+                            </li> 
+                            <li>
+                                <a href="{{ route('salesperson.vendors.opportunities') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Historico de Oportunidades</a>
+                            </li>
+                            
                         @endif
 
                     @endauth
                 </ul>
             </nav>
-            <div class="p-4 border-t border-gray-700">
+            <div class="p-1 border-t border-gray-700">
                 @auth('web')
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf

@@ -1,5 +1,8 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Email: leonardo616@gmail.com
+*/
 namespace App\Models\Doctrine; 
 
 use Doctrine\ORM\Mapping as ORM;
@@ -122,18 +125,7 @@ class User implements JWTSubject, Authenticatable  // Clase 'User' en singular, 
         $this->usersGroup = $usersGroup;
         return $this;
     }
-/*
-    public function getRememberToken(): ?string
-    {
-        return $this->remember_token;
-    }
 
-    public function setRememberToken(?string $remember_token): self
-    {
-        $this->remember_token = $remember_token;
-        return $this;
-    }
-*/
     public function getCreated(): ?DateTimeImmutable
     {
         return $this->created;

@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\Auth\LoginController;
@@ -17,6 +21,10 @@ use App\Http\Controllers\Reports\VendorPerformanceController;
 use App\Http\Controllers\Reports\VendorEditController;
 use App\Http\Controllers\Reports\ActivityReportController;
 use App\Http\Controllers\Reports\LeadOriginAnalysisController;
+use App\Http\Controllers\salesperson\VendorLeadController;
+use App\Http\Controllers\salesperson\PersonController;
+use App\Http\Controllers\salesperson\VendorOpportunitiesController;
+use App\Http\Controllers\DashboardController;
 
 
 /*
@@ -43,7 +51,7 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
-// **NUEVA LÍNEA:** Ruta para el logout. Necesita su propio nombre 'logout'.
+//Ruta para el logout. Necesita su propio nombre 'logout'.
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
@@ -51,9 +59,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Solo los usuarios logueados pueden acceder a estas rutas.
 Route::middleware(['auth'])->group(function () { // <-- Este 'auth' protege todo lo de abajo
     // Ruta del Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
 
     // **Grupo de rutas para Administradores**
     // Solo necesita un middleware para verificar el ROL de administrador.
@@ -90,7 +97,14 @@ Route::middleware(['auth'])->group(function () { // <-- Este 'auth' protege todo
         Route::get('/opportunities/{opportunityId}/activities/create', [ActivityController::class, 'create'])->name('opportunities.activities.create');
         Route::post('/opportunities/{opportunityId}/activities', [ActivityController::class, 'store'])->name('opportunities.activities.store');     
         Route::get('/opportunities/{opportunityId}/documents/upload', [DocumentController::class, 'create'])->name('opportunities.documents.upload');
-        Route::post('/opportunities/{opportunityId}/documents', [DocumentController::class, 'store'])->name('opportunities.documents.store');        
+        Route::post('/opportunities/{opportunityId}/documents', [DocumentController::class, 'store'])->name('opportunities.documents.store');
+        Route::get('/vendors/{role}/leads', [VendorLeadController::class, 'showVendorLeads'])->name('vendors.leads');
+        // Rota para exibir o formulário de edição de uma pessoa (Lead)
+        Route::get('/persons/{personId}/edit', [PersonController::class, 'edit'])->name('persons.edit');
+        // Rota para processar a atualização dos dados de uma pessoa (Lead)
+        Route::put('/persons/{personId}', [PersonController::class, 'update'])->name('persons.update');      
+        Route::get('/vendors/opportunities', [VendorOpportunitiesController::class, 'showVendorOpportunities'])->name('vendors.opportunities');
+        
     });
     Route::prefix('reports')->name('reports.')->middleware(['reports-access'])->group(function () {    
         Route::get('/sales-funnel', [SalesFunnelController::class, 'index'])->name('sales-funnel');

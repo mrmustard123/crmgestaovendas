@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 namespace App\Http\Controllers\Salesperson;
 
 use App\Http\Controllers\Controller;
@@ -154,7 +158,7 @@ Documentos: Este botón sirve para hacer el upload de documentos relacionados a 
         $this->entityManager->flush();
 
         return response()->json([
-            'message' => 'Oportunidade marcada como perdida com sucesso!',
+            'message' => 'Oportunidade marcada como perdida!',
             'opportunity_id' => $opportunityId
         ]);
     }       
@@ -181,7 +185,7 @@ Documentos: Este botón sirve para hacer el upload de documentos relacionados a 
         $this->entityManager->flush();
 
         return response()->json([
-            'message' => 'Oportunidade marcada como ganha com sucesso!',
+            'message' => 'Oportunidade marcada como ganha!',
             'opportunity_id' => $opportunityId
         ]);
     }                   

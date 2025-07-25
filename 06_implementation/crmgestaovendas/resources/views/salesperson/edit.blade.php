@@ -1,3 +1,9 @@
+<?php
+/*
+Author: Leonardo G. Tellez Saucedo
+Email: leonardo616@gmail.com
+*/
+?>
 @extends('layouts.app')
 
 @section('page_title', 'Editar Oportunidad: ' . $opportunity->getOpportunityName())
@@ -141,8 +147,8 @@
                 <div class="mb-4">
                     <label for="open_date_picker" class="block text-gray-700 text-sm font-bold mb-2">Data de abertura:</label>
                     <span id="open_date_display" class="ml-2 text-gray-700 font-medium">
-                         @if(old('expected_closing_date'))
-                             {{ \Carbon\Carbon::parse(old('expected_closing_date'))->format('d/m/Y') }}
+                         @if(old('open_date'))
+                             {{ \Carbon\Carbon::parse(old('open_date'))->format('d/m/Y') }}
                          @endif
                      </span>
                     <div class="flex items-center">

@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 namespace App\Http\Controllers\Salesperson;
 
 use App\Http\Controllers\Controller;
@@ -50,7 +54,7 @@ class DocumentController extends Controller
         $opportunity = $this->entityManager->getRepository(Opportunity::class)->find($opportunityId);
 
         if (!$opportunity) {
-            return redirect()->back()->with('error', 'Oportunidad no encontrada.');
+            return redirect()->back()->with('error', 'Oportunidade não encontrada.');
         }
 
         // Validar los datos de entrada, incluyendo el archivo
@@ -70,7 +74,7 @@ class DocumentController extends Controller
         $filePath = Storage::disk('public')->putFile('documents/' . $opportunityId, $file);
 
         if (!$filePath) {
-            return redirect()->back()->with('error', 'Error al subir el archivo.');
+            return redirect()->back()->with('error', 'Erro ao carregar arquivo.');
         }
 
         $document = new Document();
@@ -87,7 +91,5 @@ class DocumentController extends Controller
         $this->entityManager->flush();
 
         return redirect()->route('salesperson.myopportunities')->with('success', 'Documento carregado com sucesso.');
-        // O si tienes una vista de detalles de la oportunidad con los documentos listados:
-        // return redirect()->route('salesperson.opportunities.show', ['id' => $opportunityId])->with('success', 'Documento subido exitosamente.');
     }
 }

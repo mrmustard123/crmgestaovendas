@@ -1,5 +1,9 @@
 <?php
-
+/*
+Author: Leonardo G. Tellez Saucedo
+Created on: 21 jul. de 2025 17:02:18
+Email: leonardo616@gmail.com
+*/
 namespace App\Http\Controllers\Salesperson;
 
 use App\Http\Controllers\Controller;
@@ -55,7 +59,7 @@ class OpportunityCrudController extends Controller
                                          ->getOneOrNullResult();
 
         if (!$opportunity) {
-            abort(404, 'Oportunidad no encontrada.');
+            abort(404, 'Oportunidade não encontrada.');
         }
 
         // Obtener todos los datos para los selects del formulario principal
@@ -144,7 +148,7 @@ class OpportunityCrudController extends Controller
     {
         $opportunity = $this->entityManager->getRepository(Opportunity::class)->find($id);
         if (!$opportunity) {
-            return redirect()->back()->with('error', 'Oportunidad no encontrada.');
+            return redirect()->back()->with('error', 'Oportunidade não encontrada.');
         }
         
         // Procesar el campo estimated_sale para convertir formato brasilero a estándar
@@ -204,6 +208,6 @@ class OpportunityCrudController extends Controller
         $this->entityManager->flush();
 
         return redirect()->route('salesperson.opportunities.edit', ['id' => $opportunity->getOpportunityId()])
-                         ->with('success', 'Oportunidad actualizada exitosamente.');
+                         ->with('success', 'Oportunidade atualizada com sucesso.');
     }
 }

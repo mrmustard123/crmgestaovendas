@@ -1,17 +1,23 @@
+<?php
+/*
+Author: Leonardo G. Tellez Saucedo
+Email: leonardo616@gmail.com
+*/
+?>
 @extends('layouts.app')
 
-@section('page_title', 'Registrar Nueva Actividad para Oportunidad #' . $opportunity->getOpportunityId())
+@section('page_title', 'Cadastrar Atividade para essa Oportunidade #' . $opportunity->getOpportunityId())
 
 @section('content')
     <div class="container mx-auto px-4 py-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Registrar Actividad para Oportunidad: <span class="text-blue-600">{{ $opportunity->getOpportunityName() }}</span></h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Cadastrar Atividade para essa Oportunidade: <span class="text-blue-600">{{ $opportunity->getOpportunityName() }}</span></h2>
 
         {{-- Formulario para crear una nueva actividad --}}
         <form action="{{ route('salesperson.opportunities.activities.store', ['opportunityId' => $opportunity->getOpportunityId()]) }}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             @csrf
 
             <div class="mb-4">
-                <label for="titulo" class="block text-gray-700 text-sm font-bold mb-2">Título de la Actividad:</label>
+                <label for="titulo" class="block text-gray-700 text-sm font-bold mb-2">Título da Atividade:</label>
                 <input type="text" name="titulo" id="titulo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('titulo') border-red-500 @enderror" value="{{ old('titulo') }}" required>
                 @error('titulo')
                     <p class="text-red-500 text-xs italic">{{ $message }}</p>
@@ -19,7 +25,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
+                <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Descrição:</label>
                 <textarea name="description" id="description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                 @error('description')
                     <p class="text-red-500 text-xs italic">{{ $message }}</p>
@@ -27,7 +33,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="activity_date_picker" class="block text-gray-700 text-sm font-bold mb-2">Fecha de la Actividad:</label>
+                <label for="activity_date_picker" class="block text-gray-700 text-sm font-bold mb-2">Data a Atividade:</label>
                             <span id="activity_date_display" class="ml-2 text-gray-700 font-medium">
                                 @if(old('activity_date'))
                                     {{ \Carbon\Carbon::parse(old('activity_date'))->format('d/m/Y') }}
@@ -42,7 +48,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="duration_min" class="block text-gray-700 text-sm font-bold mb-2">Duración (minutos):</label>
+                <label for="duration_min" class="block text-gray-700 text-sm font-bold mb-2">Duração (minutos):</label>
                 <input type="number" name="duration_min" id="duration_min" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('duration_min') border-red-500 @enderror" value="{{ old('duration_min') }}" min="1">
                 @error('duration_min')
                     <p class="text-red-500 text-xs italic">{{ $message }}</p>
@@ -87,7 +93,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="comments" class="block text-gray-700 text-sm font-bold mb-2">Comentarios:</label>
+                <label for="comments" class="block text-gray-700 text-sm font-bold mb-2">Comentários:</label>
                 <textarea name="comments" id="comments" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('comments') border-red-500 @enderror">{{ old('comments') }}</textarea>
                 @error('comments')
                     <p class="text-red-500 text-xs italic">{{ $message }}</p>

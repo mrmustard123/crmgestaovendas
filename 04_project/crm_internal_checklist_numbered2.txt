@@ -1,0 +1,43 @@
+#-Tarea-Horas----
+1.1 - Design entity 'person' (abstract, base for PF/PJ) - 2.62h - ---
+1.2 - Design 'person_individual' (PF) - 2.62h - ---
+1.3 - Design 'person_company' (PJ) - 2.62h - ---
+1.4 - Design 'contact' entity - 2.62h - ---
+1.5 - Design 'account' entity - 2.62h - ---
+ 1.6 - Define relation: contact ? account - 2.62h - ---
+ 1.7 - Implement CRUD: Accounts (companies) - 2.62h - ---
+ 1.8 - Implement CRUD: Contacts (individuals) - 2.62h - ---
+ 1.9 - Logic to link/unlink Contacts to Accounts - 2.62h - ---
+1.10 - Contact form (create/edit) - 2.62h - ---
+1.11 - Account form (create/edit) - 2.62h - ---
+1.12 - View contacts by account - 2.62h - ---
+1.13 - Contact detail view - 2.62h ---- 
+  2.1 - Design 'opportunity' entity: value, close date, stage, etc. - 4.00h ----
+ 2.2 - CRUD: Opportunities - 4.00h - ---
+2.3 - Link Opportunity to Contact and/or Account - 4.00h - ---
+ 2.4 - Logic: Update stage with drag and drop  - 4.00h - ---
+2.5 - Visual board with columns per stage - 4.00h - ---
+2.6 - Implement drag and drop logic - 4.00h - ---
+2.7 - Opportunity card with basic info - 4.00h ---- 
+  3.1 - Entity 'lead': source QR/site/manual - 3.17h ----
+ 3.2 - Entity 'activity': call, meeting, email - 3.17h - ---
+3.3 - Entity 'document' linked to customer or opportunity - 3.17h - ---
+ 3.4 - Auto create lead via QR code - 3.17h - ---
+3.5 - Handle lead via site (manual or API) - 3.17h - ---
+3.6 - Manual lead input - 3.17h - ---
+3.7 - Register sales activities (linked to contact/account) - 3.17h - ---
+3.8 - Upload/download documents - 3.17h - ---
+ 3.10 - Activity tracking dashboard - 3.17h ----
+3.9 - Manual lead form - 3.17h ---- 
+3.11 - Document upload interface - 3.17h - ---
+ 3.10 - Activity tracking dashboard - 3.17h ----
+3.12 - Document list by client/opportunity - 3.17h ---- 
+3.11 - Document upload interface - 3.17h - ---
+3.12 - Document list by client/opportunity - 3.17h ---- 
+  5.1 - Test all user flows - 4.29h ----
+5.2 - Validate business rules - 4.29h - ---
+5.3 - Fix UI bugs - 4.29h - ---
+5.4 - Final visual adjustments and responsiveness - 4.29h - ---
+5.5 - Improve usability (UX details, shortcuts, messages) - 4.29h - ---
+5.6 - Light documentation for use - 4.29h - ---
+5.7 - Initial DB backup and delivery prep - 4.29h - ---

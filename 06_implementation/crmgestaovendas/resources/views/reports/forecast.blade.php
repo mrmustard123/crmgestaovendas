@@ -1,3 +1,9 @@
+<?php
+/*
+Author: Leonardo G. Tellez Saucedo
+Email: leonardo616@gmail.com
+*/
+?>
 @extends('layouts.app')
 
 @section('page_title', 'Previsão de Vendas')
