@@ -4,7 +4,7 @@
 File: vendor
 Author: Leonardo G. Tellez Saucedo
 Created on: 4 jul. de 2025 10:36:32
-Email: leonardo616@gmail.com
+
 */
 
 

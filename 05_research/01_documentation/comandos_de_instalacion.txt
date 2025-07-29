@@ -15,7 +15,7 @@ $ php artisan vendor:publish --tag="doctrine.config"
 $ composer require tymon/jwt-auth
 $ php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
 $ php artisan jwt:secret
-jwt-auth secret [aCZO47AB1R3dgYce3VKjL3rUy4TLB5cUDo1DBIKt4I4lQdjuJdX7axgRt3iT8CMe] set successfully.
+jwt-auth secret [********************************************] set successfully.
 
 
 

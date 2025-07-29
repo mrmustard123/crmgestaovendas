@@ -1,0 +1,12 @@
+1. Generar la Migración:
+Este comando compara el estado actual de tus entidades con el esquema de tu base de datos y genera un archivo de migración PHP que contiene las sentencias SQL necesarias para actualizar la base de datos.
+
+Abre tu terminal en la raíz de tu proyecto Laravel y ejecuta:
+php artisan doctrine:migrations:diff
+
+Este comando debería crear un nuevo archivo en tu directorio de migraciones (ej. database/migrations/DoctrineMigrations/VersionYYYYMMDDHHMMSS.php). 
+
+
+2. Ejecutar la Migración:
+Una vez que estés satisfecho con el archivo de migración generado, puedes ejecutarlo para aplicar los cambios a tu base de datos.
+php artisan doctrine:migrations:migrate

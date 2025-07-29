@@ -4,7 +4,7 @@
 File: create
 Author: Leonardo G. Tellez Saucedo
 Created on: 3 jul. de 2025 23:36:32
-Email: leonardo616@gmail.com
+
 */
 ?>
 @extends('layouts.app')

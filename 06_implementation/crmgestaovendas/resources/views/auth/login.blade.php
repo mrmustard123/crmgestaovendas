@@ -4,7 +4,7 @@
 File: login
 Author: Leonardo G. Tellez Saucedo
 Created on: 1 jul. de 2025 16:39:47
-Email: leonardo616@gmail.com
+
 */
 ?>
 

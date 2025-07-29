@@ -4,7 +4,7 @@
 File: app
 Author: Leonardo G. Tellez Saucedo
 Created on: 1 jul. de 2025 20:46:05
-Email: leonardo616@gmail.com
+
 */
 ?>
 <!DOCTYPE html>

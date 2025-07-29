@@ -4,7 +4,7 @@
 File: sales_funnel
 Author: Leonardo G. Tellez Saucedo
 Created on: 11 jul. de 2025 23:46:18
-Email: leonardo616@gmail.com
+
 */
 
     /*

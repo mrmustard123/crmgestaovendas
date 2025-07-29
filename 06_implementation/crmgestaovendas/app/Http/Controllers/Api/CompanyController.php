@@ -2,7 +2,7 @@
 /*
 Author: Leonardo G. Tellez Saucedo
 Created on: 21 jul. de 2025 17:02:18
-Email: leonardo616@gmail.com
+
 */
 namespace App\Http\Controllers\Api;
 

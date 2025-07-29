@@ -14,7 +14,7 @@ This project is a 360° CRM Sales Platform — a complete web-based solution des
 
 ## 🗄️ Database
 
-Developed using **Laravel 10**, with a clean, modular relational structure:
+Developed using **Laravel 10**, **Doctrine 3 ORM** and **MySQL 8.2.7**, with a clean, modular relational structure:
 
 - Accounts, Contacts, Opportunities, Activities
 - Sales Reps, Leads, Lead Sources

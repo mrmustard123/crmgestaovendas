@@ -4,7 +4,7 @@
 File: EnumType
 Author: Leonardo G. Tellez Saucedo
 Created on: 17 jul. de 2025 18:33:10
-Email: leonardo616@gmail.com
+
 */
 
 namespace App\Models\Doctrine\Types;
