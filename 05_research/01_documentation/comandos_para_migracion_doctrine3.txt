@@ -1,12 +1,64 @@
-1. Generar la Migración:
-Este comando compara el estado actual de tus entidades con el esquema de tu base de datos y genera un archivo de migración PHP que contiene las sentencias SQL necesarias para actualizar la base de datos.
+ï»¿1. Generar la MigraciÃ³n:
+Este comando compara el estado actual de tus entidades con el esquema de tu base de datos y genera un archivo de migraciÃ³n PHP que contiene las sentencias SQL necesarias para actualizar la base de datos.
 
-Abre tu terminal en la raíz de tu proyecto Laravel y ejecuta:
+Abre tu terminal en la raÃ­z de tu proyecto Laravel y ejecuta:
 php artisan doctrine:migrations:diff
 
-Este comando debería crear un nuevo archivo en tu directorio de migraciones (ej. database/migrations/DoctrineMigrations/VersionYYYYMMDDHHMMSS.php). 
+Este comando deberÃ­a crear un nuevo archivo en tu directorio de migraciones (ej. database/migrations/DoctrineMigrations/VersionYYYYMMDDHHMMSS.php). 
 
 
-2. Ejecutar la Migración:
-Una vez que estés satisfecho con el archivo de migración generado, puedes ejecutarlo para aplicar los cambios a tu base de datos.
+2. Ejecutar la MigraciÃ³n:
+Una vez que estÃ©s satisfecho con el archivo de migraciÃ³n generado, puedes ejecutarlo para aplicar los cambios a tu base de datos.
 php artisan doctrine:migrations:migrate
+
+en config/migrations hay que indicar el path para las migraciones de Dotcrine:
+
+<?php
+
+declare(strict_types=1);
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Entity Manager Migrations Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Each entity manager can have a custom migration configuration. Provide
+    | the name of the entity manager as the key, then duplicate the settings.
+    | This will allow generating custom migrations per EM instance and not have
+    | collisions when executing them.
+    |
+    */
+    'default' => [
+        'table_storage' => [
+            /*
+            |--------------------------------------------------------------------------
+            | Migration Repository Table
+            |--------------------------------------------------------------------------
+            |
+            | This table keeps track of all the migrations that have already run for
+            | your application. Using this information, we can determine which of
+            | the migrations on disk haven't actually been run in the database.
+            |
+            */
+
+            'table_name' => 'doctrine_migrations',
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Schema filter
+            |--------------------------------------------------------------------------
+            |
+            | Tables which are filtered by Regular Expression. You optionally
+            | exclude or limit to certain tables. The default will
+            | filter all tables.
+            |
+            */
+            'schema_filter'    => '/^(?!password_resets|failed_jobs).*$/'
+        ],
+
+        'migrations_paths' => [
+            'Database\\DoctrineMigrations' => database_path('migrations/doctrine'),
+        ],
